@@ -7,29 +7,28 @@ import { NgForOf, TitleCasePipe } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-alert',
-  standalone: true,
-  imports: [
-    TitleCasePipe,
-    FaIconComponent,
-    NgForOf
-  ],
-  templateUrl: './alert.component.html',
-  styleUrl: './alert.component.scss',
-  animations: [
-    trigger('toast', [
-      transition(':enter', [
-        style({
-          opacity: 0,
-          transform: 'translateX(100%)'
-        }),
-        animate('500ms ease', style({
-          opacity: 1,
-          transform: 'translateX(0)'
-        })),
-      ]),
-    ]),
-  ],
+    selector: 'app-alert',
+    imports: [
+        TitleCasePipe,
+        FaIconComponent,
+        NgForOf
+    ],
+    templateUrl: './alert.component.html',
+    styleUrl: './alert.component.scss',
+    animations: [
+        trigger('toast', [
+            transition(':enter', [
+                style({
+                    opacity: 0,
+                    transform: 'translateX(100%)'
+                }),
+                animate('500ms ease', style({
+                    opacity: 1,
+                    transform: 'translateX(0)'
+                })),
+            ]),
+        ]),
+    ]
 })
 export class AlertComponent implements OnInit, OnDestroy {
   faExclamationTriangle = faExclamationTriangle;

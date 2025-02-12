@@ -6,21 +6,21 @@ import { NavComponent } from './components/nav/nav.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { UserService } from './services/user.service';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    AlertComponent,
-    SpinnerComponent,
-    NavComponent,
-    FooterComponent,
-    NgIf,
-    AsyncPipe
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+    selector: 'app-root',
+    imports: [
+      RouterOutlet,
+      AlertComponent,
+      SpinnerComponent,
+      NavComponent,
+      FooterComponent,
+      NgIf,
+      AsyncPipe,
+    ],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'Kerkalender';

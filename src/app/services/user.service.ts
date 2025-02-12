@@ -4,6 +4,7 @@ import { User } from '../models/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
+import { AlertService } from './alert.service';
 
 const apiUrl = 'http://localhost:8000/';
 
@@ -25,6 +26,7 @@ export class UserService {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
+    private alertService: AlertService
   ) {
     this.currentUserSubject = new BehaviorSubject<User | null>(null);
     this.tokenSubject = new BehaviorSubject<string>('');
@@ -50,7 +52,7 @@ export class UserService {
     this.http.get<any>(apiUrl + 'auth/logout').pipe(
       catchError(err => {
         console.error(err);
-        // this.alertService.add({ type: 'warning', message: 'Could not remove refresh cookie' });
+        this.alertService.add({ type: 'warning', message: 'Could not remove refresh cookie' });
         return of();
       }),
       tap(_ => {

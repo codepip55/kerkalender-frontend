@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+// scss-lint:disable ImportantRule
+@theme {
+  --color-text: oklch(11.83% 0.046 280.65);
+  --color-background: oklch(98.89% 0.004 286.33);
+  --color-primary: oklch(76.58% 0.133 179.34);
+  --color-secondary: oklch(64.42% 0.143 254.69);
+  --color-accent: oklch(89.11% 0.117 101.56);
+
+  --color-success: oklch(80.34% 0.131 180.66);
+  --color-warning: oklch(68.86% 0.161 22.23);
+  --color-pending: oklch(73.64% 0.104 253.94);
+  --color-danger: oklch(60.60% 0.216 26.60);
+
+  --color-text-50: oklch(94.04% 0.026 288.32);
+  --color-text-100: oklch(87.78% 0.054 287.59);
+  --color-text-200: oklch(75.49% 0.111 285.75);
+  --color-text-300: oklch(63.40% 0.171 282.69);
+  --color-text-400: oklch(52.25% 0.226 277.40);
+  --color-text-500: oklch(43.73% 0.266 269.48);
+  --color-text-600: oklch(37.34% 0.224 269.98);
+  --color-text-700: oklch(30.66% 0.179 270.85);
+  --color-text-800: oklch(23.66% 0.130 272.49);
+  --color-text-900: oklch(16.21% 0.076 276.57);
+  --color-text-950: oklch(11.83% 0.046 280.65);
+
+  --color-background-50: oklch(94.45% 0.020 286.01);
+  --color-background-100: oklch(88.58% 0.042 285.50);
+  --color-background-200: oklch(77.00% 0.088 284.14);
+  --color-background-300: oklch(65.61% 0.134 282.07);
+  --color-background-400: oklch(54.28% 0.183 278.42);
+  --color-background-500: oklch(44.19% 0.226 272.28);
+  --color-background-600: oklch(37.85% 0.188 272.81);
+  --color-background-700: oklch(31.27% 0.149 273.65);
+  --color-background-800: oklch(24.23% 0.109 274.59);
+  --color-background-900: oklch(16.90% 0.062 277.54);
+  --color-background-950: oklch(12.66% 0.035 280.16);
+
+  --color-primary-50: oklch(97.47% 0.018 184.28);
+  --color-primary-100: oklch(94.98% 0.037 186.09);
+  --color-primary-200: oklch(90.27% 0.071 183.89);
+  --color-primary-300: oklch(86.02% 0.101 182.87);
+  --color-primary-400: oklch(82.05% 0.122 181.89);
+  --color-primary-500: oklch(78.80% 0.137 179.29);
+  --color-primary-600: oklch(66.74% 0.115 179.97);
+  --color-primary-700: oklch(54.32% 0.093 179.42);
+  --color-primary-800: oklch(40.88% 0.069 179.43);
+  --color-primary-900: oklch(26.27% 0.040 181.77);
+  --color-primary-950: oklch(17.96% 0.025 185.65);
+
+  --color-secondary-50: oklch(95.50% 0.016 253.90);
+  --color-secondary-100: oklch(91.23% 0.033 252.47);
+  --color-secondary-200: oklch(82.27% 0.068 254.06);
+  --color-secondary-300: oklch(73.64% 0.104 253.94);
+  --color-secondary-400: oklch(65.28% 0.138 254.43);
+  --color-secondary-500: oklch(57.28% 0.173 256.25);
+  --color-secondary-600: oklch(48.95% 0.143 255.84);
+  --color-secondary-700: oklch(40.06% 0.115 255.80);
+  --color-secondary-800: oklch(30.60% 0.083 255.74);
+  --color-secondary-900: oklch(20.66% 0.046 253.72);
+  --color-secondary-950: oklch(15.11% 0.026 250.77);
+
+  --accent-50: oklch(94.70% 0.022 17.55);
+  --accent-100: oklch(89.56% 0.046 18.05);
+  --accent-200: oklch(79.68% 0.095 19.39);
+  --accent-300: oklch(70.62% 0.150 21.60);
+  --accent-400: oklch(63.30% 0.199 24.87);
+  --accent-500: oklch(58.54% 0.228 28.16);
+  --accent-600: oklch(49.74% 0.193 28.05);
+  --accent-700: oklch(40.40% 0.154 27.72);
+  --accent-800: oklch(30.54% 0.112 27.04);
+  --accent-900: oklch(19.95% 0.068 25.83);
+  --accent-950: oklch(14.13% 0.041 23.93);
+}
+// scss-lint:enable ImportantRule
