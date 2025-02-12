@@ -3,6 +3,7 @@ import { BehaviorSubject, catchError, filter, first, Observable, of, switchMap, 
 import { User } from '../models/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { ApiResponse } from '../models/api-response.model';
 
 const apiUrl = 'http://localhost:8000/';
 
@@ -72,52 +73,53 @@ export class UserService {
       tap(qs => nonce = qs.get('state') || ''),
       filter(qs => !!qs.get('code')),
       first(),
-      switchMap(qs => this.http.get(`${apiUrl}auth/callback?code=${qs.get('code')}&state=${nonce}`)),
-    ).subscribe(res => {
-      this.currentUserSubject.next(res.user);
-      this.tokenSubject.next(res.token);
-      // Attempt to refresh 1 min before token expires
-      clearTimeout(this.refreshTimeout);
-      this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - 60 * 1000);
+      switchMap(qs => this.http.get<ApiResponse>(`${apiUrl}auth/callback?code=${qs.get('code')}&state=${nonce}`)),
+    ).subscribe({ next: (res) => {
+        this.currentUserSubject.next(res.user);
+        this.tokenSubject.next(res.token);
+        // Attempt to refresh 1 min before token expires
+        clearTimeout(this.refreshTimeout);
+        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - 60 * 1000);
 
-      if (nonce !== '') {
-        const state = window.sessionStorage.getItem(nonce);
-        if (state) {
-          const stateObj = JSON.parse(state);
-          const redirectTo = this.router.parseUrl(stateObj.redirectTo);
-          this.router.navigateByUrl(redirectTo);
-          this.loadingSubject.next(false);
-          return;
+        if (nonce !== '') {
+          const state = window.sessionStorage.getItem(nonce);
+          if (state) {
+            const stateObj = JSON.parse(state);
+            const redirectTo = this.router.parseUrl(stateObj.redirectTo);
+            this.router.navigateByUrl(redirectTo);
+            this.loadingSubject.next(false);
+            return;
+          }
         }
-      }
 
-      this.loadingSubject.next(false);
-    }, err => {
-      console.error(err);
-      // this.alertService.add({ type: 'danger', message: 'Could not log in' });
-      this.router.navigate(['/']);
-      this.loadingSubject.next(false);
-    })
+        this.loadingSubject.next(false);
+      }, error: (err) => {
+        console.error(err);
+        // this.alertService.add({ type: 'danger', message: 'Could not log in' });
+        this.router.navigate(['/']);
+        this.loadingSubject.next(false);
+      }
+    });
   }
   public silentAuth(initialLoad: boolean = false) {
     this.loadingSubject.next(true);
-    this.http.get(`${apiUrl}auth/silent`, { withCredentials: true }).pipe(
+    this.http.get<ApiResponse>(`${apiUrl}auth/silent`, { withCredentials: true }).pipe(
       first()
-    ).subscribe(
-      res => {
+    ).subscribe({
+      next: (res) => {
         this.currentUserSubject.next(res.user);
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires
         clearTimeout(this.refreshTimeout);
         this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - 60 * 1000);
         this.loadingSubject.next(false);
-      }, _err => {
+      }, error: (_err) => {
         if (!initialLoad) {
           // this.alertService.add({ type: 'warning', message: 'Could not refresh token. Please save your work and refresh the page' });
         }
         this.loadingSubject.next(false);
       }
-    );
+    });
   }
 
   public get currentUser(): User | null { return this.currentUserSubject.value; }

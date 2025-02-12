@@ -1,1 +1,151 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+html, body {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+}
+
+main {
+  -webkit-overflow-scrolling: touch;
+  flex: auto;
+}
+
+.custom-container {
+  @apply max-w-[100rem]  w-[90%] mx-auto;
+}
+
+/* Alert */
+.alert {
+  position: relative;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.alert.alert-dismissible {
+  padding-left: 1.25rem;
+  padding-right: 4rem;
+}
+.alert.alert-dismissible:not(.show) {
+  display: none;
+}
+.alert .btn-close {
+  position: absolute;
+  right: 0px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+.btn-close {
+  --tw-text-opacity: 1;
+  color: rgb(var(--color-slate-800) / var(--tw-text-opacity));
+}
+
+/* Alert Colors */
+.alert-primary {
+  @apply bg-primary border-primary text-white;
+}
+.alert-secondary {
+  @apply bg-slate-200/70 border-slate-200/70 text-slate-500;
+}
+.alert-success {
+  @apply bg-success border-success text-slate-900;
+}
+.alert-warning {
+  @apply bg-warning border-warning text-slate-900;
+}
+.alert-pending {
+  @apply bg-pending border-pending text-white;
+}
+.alert-danger {
+  @apply bg-danger border-danger text-white;
+}
+.alert-dark {
+  @apply bg-slate-700 border-slate-700 text-white;
+}
+/* Outline Button */
+.alert-outline-primary {
+  @apply text-primary border-primary;
+}
+.alert-outline-secondary {
+  @apply text-slate-500 border-slate-200;
+}
+.alert-outline-success {
+  @apply text-success border-success;
+}
+.alert-outline-warning {
+  @apply text-warning border-warning;
+}
+.alert-outline-pending {
+  @apply text-pending border-pending;
+}
+.alert-outline-danger {
+  @apply text-danger border-danger;
+}
+.alert-outline-dark {
+  @apply text-slate-700 border-slate-700;
+}
+/* Button Soft Colors */
+.alert-primary-soft {
+  border-color: rgb(var(--color-primary) / var(--tw-border-opacity));
+  --tw-border-opacity: 0.05;
+  background-color: rgb(var(--color-primary) / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.2;
+  --tw-text-opacity: 1;
+  color: rgb(var(--color-primary) / var(--tw-text-opacity));
+}
+.alert-secondary-soft {
+  --tw-border-opacity: 1;
+  border-color: rgb(var(--color-slate-200) / var(--tw-border-opacity));
+  background-color: rgb(var(--color-slate-300) / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.1;
+  --tw-text-opacity: 1;
+  color: rgb(var(--color-slate-500) / var(--tw-text-opacity));
+}
+.alert-success-soft {
+  border-color: rgb(var(--color-success) / var(--tw-border-opacity));
+  --tw-border-opacity: 0.05;
+  background-color: rgb(var(--color-success) / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.2;
+  --tw-text-opacity: 1;
+  color: rgb(var(--color-success) / var(--tw-text-opacity));
+}
+.alert-warning-soft {
+  border-color: rgb(var(--color-warning) / var(--tw-border-opacity));
+  --tw-border-opacity: 0.05;
+  background-color: rgb(var(--color-warning) / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.2;
+  --tw-text-opacity: 1;
+  color: rgb(var(--color-warning) / var(--tw-text-opacity));
+}
+.alert-pending-soft {
+  border-color: rgb(var(--color-pending) / var(--tw-border-opacity));
+  --tw-border-opacity: 0.05;
+  background-color: rgb(var(--color-pending) / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.2;
+  --tw-text-opacity: 1;
+  color: rgb(var(--color-pending) / var(--tw-text-opacity));
+}
+.alert-danger-soft {
+  border-color: rgb(var(--color-danger) / var(--tw-border-opacity));
+  --tw-border-opacity: 0.05;
+  background-color: rgb(var(--color-danger) / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.2;
+  --tw-text-opacity: 1;
+  color: rgb(var(--color-danger) / var(--tw-text-opacity));
+}
