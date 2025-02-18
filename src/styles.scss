@@ -149,3 +149,24 @@ main {
   --tw-text-opacity: 1;
   color: rgb(var(--color-danger) / var(--tw-text-opacity));
 }
+
+// Avatar
+$colors: #a2b9bc,#6b5b95,#feb236, #d64161, #ff7b25, #b2ad7f,  #878f99;
+
+.avatar {
+  color: #fff;
+  padding: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius:100%;
+  width:50px;
+  height: 50px;
+  font-weight: 600;
+}
+
+@for $i from 1 through length($colors) {
+  .avatar:nth-child(#{length($colors)}n+#{$i}) {
+    background: lighten(nth($colors, $i), 20%);
+  }
+}

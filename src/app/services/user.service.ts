@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
 import { AlertService } from './alert.service';
 
-const apiUrl = 'http://localhost:8000/';
+const apiUrl = 'http://localhost:8000/api/';
 
 @Injectable({
   providedIn: 'root'
@@ -40,12 +40,12 @@ export class UserService {
   public login(redirectTo: string = '/') {
     this.loadingSubject.next(true);
 
-    const nonce = 'kk_redirect_' + Math.random().toString(37).replace(/[^a-z]+/g, '');
+    const nonce = 'kk_redirect_' + Math.random().toString(36).replace(/[^a-z]+/g, '');
     const state = { redirectTo };
 
     window.sessionStorage.setItem(nonce, JSON.stringify(state));
 
-    document.location.href = apiUrl + 'auth/login?state=' + nonce;
+    document.location.href = apiUrl + 'auth/kerkalender?state=' + nonce;
   }
   public logout() {
     this.loadingSubject.next(true);
@@ -75,7 +75,7 @@ export class UserService {
       tap(qs => nonce = qs.get('state') || ''),
       filter(qs => !!qs.get('code')),
       first(),
-      switchMap(qs => this.http.get<ApiResponse>(`${apiUrl}auth/callback?code=${qs.get('code')}&state=${nonce}`)),
+      switchMap(qs => this.http.get<ApiResponse>(`${apiUrl}auth/kerkalender?code=${qs.get('code')}&state=${nonce}`)),
     ).subscribe({ next: (res) => {
         this.currentUserSubject.next(res.user);
         this.tokenSubject.next(res.token);
@@ -97,7 +97,7 @@ export class UserService {
         this.loadingSubject.next(false);
       }, error: (err) => {
         console.error(err);
-        // this.alertService.add({ type: 'danger', message: 'Could not log in' });
+        this.alertService.add({ type: 'danger', message: 'Could not log in' });
         this.router.navigate(['/']);
         this.loadingSubject.next(false);
       }
@@ -109,6 +109,7 @@ export class UserService {
       first()
     ).subscribe({
       next: (res) => {
+        console.log('silentAuth', res);
         this.currentUserSubject.next(res.user);
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires
@@ -116,12 +117,17 @@ export class UserService {
         this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - 60 * 1000);
         this.loadingSubject.next(false);
       }, error: (_err) => {
+        console.error(_err);
         if (!initialLoad) {
-          // this.alertService.add({ type: 'warning', message: 'Could not refresh token. Please save your work and refresh the page' });
+          this.alertService.add({ type: 'warning', message: 'Could not refresh token. Please save your work and refresh the page' });
         }
         this.loadingSubject.next(false);
       }
     });
+  }
+
+  public getInitials(firstName: string, lastName: string) {
+    return firstName[0].toUpperCase() + lastName[0].toUpperCase();
   }
 
   public get currentUser(): User | null { return this.currentUserSubject.value; }
