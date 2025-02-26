@@ -15,16 +15,14 @@ export class NavComponent {
   }
 
   getInitials() {
-    // const currentUser = this.userService.currentUser;
-    // const firstName = currentUser ? currentUser.name.split(' ')[0] : '';
-    // const lastName = currentUser ? currentUser.name.split(' ')[1] : '';
-    // return this.userService.getInitials(firstName, lastName);
-    return '';
+    const currentUser = this.userService.currentUser;
+    const firstName = currentUser ? currentUser.name.split(' ')[0] : '';
+    const lastName = currentUser ? currentUser.name.split(' ')[1] : '';
+    return this.userService.getInitials(firstName, lastName);
   }
   getUserName(name: 'first' | 'last') {
-    // const currentUser = this.userService.currentUser;
-    // return currentUser ? currentUser.name.split(' ')[name === 'first' ? 0 : 1] : '';
-    return '';
+    const currentUser = this.userService.currentUser;
+    return currentUser ? currentUser.name.split(' ')[name === 'first' ? 0 : 1] : '';
   }
   get isLoggedIn() {
     return this.userService.loggedIn;
