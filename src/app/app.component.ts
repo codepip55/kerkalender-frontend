@@ -16,8 +16,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
       SpinnerComponent,
       NavComponent,
       FooterComponent,
-      NgIf,
-      AsyncPipe,
     ],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
