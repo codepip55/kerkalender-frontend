@@ -1,13 +1,24 @@
-FROM node:20.10-alpine AS build
+# Stage 1: Build Angular app
+FROM node:20-alpine AS build
 
-COPY . /usr/src
+WORKDIR /app
 
-WORKDIR /usr/src
+# Copy package files and install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
 
-ENV NODE_ENV=production
+# Copy the entire project and build
+COPY . .
+RUN npm run build -- --configuration=production
 
-RUN npm install --include dev
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
 
-RUN npm run build
+# Copy built Angular app to Nginx's HTML directory
+COPY --from=build /app/dist/kerkalender-frontend /usr/share/nginx/html
 
-CMD ["npm", "run", "start-prod"]
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
