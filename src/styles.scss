@@ -1,4 +1,6 @@
 @use 'tailwindcss';
+@use 'sass:list';
+@use'sass:color';
 
 @use './app/assets/scss/theme';
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
@@ -9,29 +11,22 @@ html, body {
   height: 100%;
   min-height: 100%;
 }
-
 body {
   @apply bg-background;
 }
-
 main {
   -webkit-overflow-scrolling: touch;
   flex: auto;
 }
-
 .custom-container {
   @apply max-w-[100rem]  w-[90%] mx-auto;
 }
-
 /* Alert */
 .alert {
   position: relative;
   border-radius: 0.375rem;
   border-width: 1px;
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding: 1rem 1.25rem;
 }
 .alert.alert-dismissible {
   padding-left: 1.25rem;
@@ -42,20 +37,16 @@ main {
 }
 .alert .btn-close {
   position: absolute;
-  right: 0px;
+  right: 0;
   margin-top: auto;
   margin-bottom: auto;
   margin-right: 0.5rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
+  padding: 0.5rem 0.75rem;
 }
 .btn-close {
   --tw-text-opacity: 1;
   color: rgb(var(--color-slate-800) / var(--tw-text-opacity));
 }
-
 /* Alert Colors */
 .alert-primary {
   @apply bg-primary border-primary text-white;
@@ -149,10 +140,8 @@ main {
   --tw-text-opacity: 1;
   color: rgb(var(--color-danger) / var(--tw-text-opacity));
 }
-
-// Avatar
+/* Avatar */
 $colors: #a2b9bc,#6b5b95,#feb236, #d64161, #ff7b25, #b2ad7f,  #878f99;
-
 .avatar {
   color: #fff;
   padding: 2px;
@@ -164,9 +153,8 @@ $colors: #a2b9bc,#6b5b95,#feb236, #d64161, #ff7b25, #b2ad7f,  #878f99;
   height: 50px;
   font-weight: 600;
 }
-
-@for $i from 1 through length($colors) {
-  .avatar:nth-child(#{length($colors)}n+#{$i}) {
-    background: lighten(nth($colors, $i), 20%);
+@for $i from 1 through list.length($colors) {
+  .avatar:nth-child(#{list.length($colors)}n + #{$i}) {
+    background: color.adjust(list.nth($colors, $i), $lightness: 10%);
   }
 }
