@@ -1,6 +1,6 @@
 @use "tailwindcss";
 
-// scss-lint:disable ImportantRule
+/* scss-lint:disable ImportantRule */
 @theme {
   --color-text: oklch(11.83% 0.046 280.65);
   --color-background: oklch(98.89% 0.004 286.33);
@@ -73,4 +73,4 @@
   --accent-900: oklch(19.95% 0.068 25.83);
   --accent-950: oklch(14.13% 0.041 23.93);
 }
-// scss-lint:enable ImportantRule
+/* scss-lint:enable ImportantRule */
