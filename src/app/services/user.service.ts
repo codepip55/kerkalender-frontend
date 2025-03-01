@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
 import { AlertService } from './alert.service';
 
-const apiUrl = 'https://core.pepijncolenbrander.com/api/';
+const apiUrl = 'http://localhost:8000/api/';
 
 @Injectable({
   providedIn: 'root'
@@ -81,7 +81,7 @@ export class UserService {
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires
         clearTimeout(this.refreshTimeout);
-        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - 60 * 1000);
+        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expires_in - (60 * 1000));
 
         if (nonce !== '') {
           const state = window.sessionStorage.getItem(nonce);
@@ -109,12 +109,11 @@ export class UserService {
       first()
     ).subscribe({
       next: (res) => {
-        console.log('silentAuth', res);
         this.currentUserSubject.next(res.user);
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires
         clearTimeout(this.refreshTimeout);
-        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - 60 * 1000);
+        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expires_in - (60 * 1000));
         this.loadingSubject.next(false);
       }, error: (_err) => {
         console.error(_err);
