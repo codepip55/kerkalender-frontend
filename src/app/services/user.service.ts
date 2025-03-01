@@ -52,7 +52,7 @@ export class UserService {
     this.http.get<any>(apiUrl + 'auth/logout').pipe(
       catchError(err => {
         console.error(err);
-        this.alertService.add({ type: 'warning', message: 'Could not remove refresh cookie' });
+        this.alertService.add({ type: 'warning', message: 'Could not remove refresh token' });
         return of();
       }),
       tap(_ => {
@@ -132,4 +132,5 @@ export class UserService {
   public get currentUser(): User | null { return this.currentUserSubject.value; }
   public get token(): string { return this.tokenSubject.value; }
   public get loggedIn(): boolean { return this.currentUser !== null; }
+  public get apiUrl(): string { return apiUrl; }
 }
