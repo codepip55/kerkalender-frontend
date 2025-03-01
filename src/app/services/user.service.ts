@@ -52,7 +52,7 @@ export class UserService {
     this.http.get<any>(apiUrl + 'auth/logout').pipe(
       catchError(err => {
         console.error(err);
-        this.alertService.add({ type: 'warning', message: 'Could not remove refresh cookie' });
+        this.alertService.add({ type: 'warning', message: 'Could not remove refresh token' });
         return of();
       }),
       tap(_ => {
@@ -81,7 +81,7 @@ export class UserService {
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires
         clearTimeout(this.refreshTimeout);
-        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - 60 * 1000);
+        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expires_in - (60 * 1000));
 
         if (nonce !== '') {
           const state = window.sessionStorage.getItem(nonce);
@@ -109,12 +109,11 @@ export class UserService {
       first()
     ).subscribe({
       next: (res) => {
-        console.log('silentAuth', res);
         this.currentUserSubject.next(res.user);
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires
         clearTimeout(this.refreshTimeout);
-        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - 60 * 1000);
+        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expires_in - (60 * 1000));
         this.loadingSubject.next(false);
       }, error: (_err) => {
         console.error(_err);
@@ -133,4 +132,5 @@ export class UserService {
   public get currentUser(): User | null { return this.currentUserSubject.value; }
   public get token(): string { return this.tokenSubject.value; }
   public get loggedIn(): boolean { return this.currentUser !== null; }
+  public get apiUrl(): string { return apiUrl; }
 }
