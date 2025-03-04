@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
 import { AlertService } from './alert.service';
 
-const apiUrl = 'https://core.pepijncolenbrander.com/api/';
+const apiUrl = 'http://localhost:8000/api/';
 
 @Injectable({
   providedIn: 'root'

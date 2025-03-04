@@ -7,16 +7,15 @@
   <div class="z-5 hidden sm:block">
     <div id="blob"></div>
   </div>
-<!--  <router-outlet *ngIf="!(this.userService.loading$ | async) else loader"></router-outlet>-->
-  <router-outlet></router-outlet>
+  @if (!(this.userService.loading$ | async)) {
+    <router-outlet></router-outlet>
+  } @else {
+    <div class="w-full h-full m-auto flex items-center justify-center">
+      <app-spinner size="xl"></app-spinner>
+    </div>
+  }
 </main>
 <footer>
   <app-footer></app-footer>
 </footer>
 </body>
-
-<ng-template #loader>
-  <div class="w-full h-full m-auto flex items-center justify-center">
-    <app-spinner></app-spinner>
-  </div>
-</ng-template>

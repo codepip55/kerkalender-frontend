@@ -10,13 +10,14 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
     selector: 'app-root',
-    imports: [
-      RouterOutlet,
-      AlertComponent,
-      SpinnerComponent,
-      NavComponent,
-      FooterComponent,
-    ],
+  imports: [
+    RouterOutlet,
+    AlertComponent,
+    SpinnerComponent,
+    NavComponent,
+    FooterComponent,
+    AsyncPipe,
+  ],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })

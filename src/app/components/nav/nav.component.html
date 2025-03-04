@@ -4,6 +4,11 @@
       <a routerLink="/">Kerkalender</a>
     </div>
     <div class="flex justify-around space-x-2">
+      <div class="my-auto mr-5 space-x-4 flex flex-column">
+      @if (isLoggedIn) {
+        <div><a href="/dashboard">Dashboard</a></div>
+      }
+      </div>
       @if (isLoggedIn) {
       <div class="relative flex items-center gap-x-4" (click)="logout()">
         <div class="avatar">{{ getInitials() }}</div>
