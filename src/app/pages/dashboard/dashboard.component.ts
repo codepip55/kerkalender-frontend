@@ -4,14 +4,14 @@ import { faCircleCheck, faCircleQuestion, faCircleRight } from '@fortawesome/fre
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-dashboard',
   imports: [
     FaIconComponent
   ],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss'
 })
-export class HomeComponent {
+export class DashboardComponent {
 
   protected readonly faCircleRight = faCircleRight;
   protected readonly faCircleCheck = faCircleCheck;

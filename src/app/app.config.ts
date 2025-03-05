@@ -17,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: 'API_URL',
       useValue: 'http://localhost:8000/api/'
-    }
-  ]
+    },
+
+  ],
 };
