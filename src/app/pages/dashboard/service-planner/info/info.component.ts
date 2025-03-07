@@ -76,7 +76,11 @@ export class InfoComponent implements OnInit{
   }
   onSubmit() {
     if (this.serviceForm.valid) {
+      this.alertService.add({ type: 'success', message: 'Dienst opgeslagen' });
       console.log(this.serviceForm.value);
+    } else {
+      this.alertService.add({ type: 'warning', message: 'Formulier is niet geldig.' });
+      console.error('Formulier is niet geldig.');
     }
   }
 }
