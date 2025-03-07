@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, catchError, filter, first, Observable, of, switchMap, tap } from 'rxjs';
 import { User } from '../models/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,11 +11,12 @@ const apiUrl = 'http://localhost:8000/api/';
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class UserService implements OnDestroy {
   private currentUserSubject: BehaviorSubject<User | null>;
   private tokenSubject: BehaviorSubject<string>;
   private loadingSubject: BehaviorSubject<boolean>;
   private refreshTimeout: ReturnType<typeof setTimeout>;
+  private subscriptions: any[] = [];
 
   public token$: Observable<string>;
   public currentUser$: Observable<User | null>;
@@ -36,6 +37,12 @@ export class UserService {
     this.token$ = this.tokenSubject.asObservable();
     this.loading$ = this.loadingSubject.asObservable();
   }
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.currentUserSubject.unsubscribe();
+    this.tokenSubject.unsubscribe();
+    this.loadingSubject.unsubscribe();
+  }
 
   public login(redirectTo: string = '/') {
     this.loadingSubject.next(true);
@@ -49,7 +56,7 @@ export class UserService {
   }
   public logout() {
     this.loadingSubject.next(true);
-    this.http.get<any>(apiUrl + 'auth/logout').pipe(
+    const sub = this.http.get<any>(apiUrl + 'auth/logout').pipe(
       catchError(err => {
         console.error(err);
         this.alertService.add({ type: 'warning', message: 'Could not remove refresh token' });
@@ -67,11 +74,12 @@ export class UserService {
         this.loadingSubject.next(false);
       })
     ).subscribe();
+    this.subscriptions.push(sub);
   }
   public handleCallback() {
     let nonce: string;
     this.loadingSubject.next(true);
-    this.route.queryParamMap.pipe(
+    const sub = this.route.queryParamMap.pipe(
       tap(qs => nonce = qs.get('state') || ''),
       filter(qs => !!qs.get('code')),
       first(),
@@ -102,10 +110,11 @@ export class UserService {
         this.loadingSubject.next(false);
       }
     });
+    this.subscriptions.push(sub);
   }
   public silentAuth(initialLoad: boolean = false) {
     this.loadingSubject.next(true);
-    this.http.get<ApiResponse>(`${apiUrl}auth/silent`, { withCredentials: true }).pipe(
+    const sub = this.http.get<ApiResponse>(`${apiUrl}auth/silent`, { withCredentials: true }).pipe(
       first()
     ).subscribe({
       next: (res) => {
@@ -123,6 +132,7 @@ export class UserService {
         this.loadingSubject.next(false);
       }
     });
+    this.subscriptions.push(sub);
   }
 
   public getInitials(firstName: string, lastName: string) {

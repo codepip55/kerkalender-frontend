@@ -1,0 +1,63 @@
+<form [formGroup]="setlistForm" (ngSubmit)="onSubmit()">
+  <div class="bg-white p-5 mt-5">
+    <div class="flex justify-between items-center">
+      <div class="text-xl font-bold">Setlist</div>
+      <button type="submit" class="my-auto cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
+        <fa-icon class="fa-lg text-gray-400 mr-2" [icon]="faFloppyDisk"></fa-icon>Opslaan
+      </button>
+    </div>
+    <div>
+      <div>
+        <label for="song">Lied Toevogen</label>
+        <div class="flex w-full">
+          <input type="text" name="song" id="song" autocomplete="song" class="mr-2" #songName>
+          <button type="button" class="cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 mt-2" (click)="addSong(songName.value)">Toevoegen</button>
+        </div>
+      </div>
+
+      <div class="border border-gray-200 rounded-md p-3 mt-5 text-md" *ngFor="let song of songs.controls; let i = index">
+        <div class="flex justify-between items-center">
+          <div class=""><span class="font-bold">{{ song.get('song')?.value }}</span> | {{ song.get('artist')?.value }}</div>
+          <button type="button" class="my-auto cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50" (click)="removeSong(i)">
+            <fa-icon class="fa-lg text-gray-400" [icon]="faTrash"></fa-icon>
+          </button>
+        </div>
+        <div class="text-sm text-gray-500"><a href="{{ song.get('spotifyLink')?.value }}" target="_blank">Luisteren op Spotify</a></div>
+
+        <div class="mt-3">
+          <div class="text-sm flex w-full">
+            <span class="mr-3 my-auto">Key:</span>
+            <div class="mt-2 grid grid-cols-1">
+              <select id="key" name="key" autocomplete="key" value="{{ song.get('key')?.value }}">
+                <option value="A">A</option>
+                <option value="A#">A#</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="C#">C#</option>
+                <option value="D">D</option>
+                <option value="D#">D#</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="F#">F#</option>
+                <option value="G">G</option>
+              </select>
+              <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 space-x-5">
+            <div class="text-sm">
+              <label for="band_notes">Band Notes</label>
+              <textarea name="band_notes" id="band_notes" rows="3" class="" [value]="song.get('bandNotes')?.value"></textarea>
+            </div>
+            <div class="text-sm">
+              <label for="vocal_notes">Vocal Notes</label>
+              <textarea name="vocal_notes" id="vocal_notes" rows="3" class="" [value]="song.get('vocalNotes')?.value"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,28 @@
+.inactive {
+  white-space: nowrap;
+  border-bottom-width: 2px;
+  border-color: transparent;
+  padding-left: .25rem;
+  padding-right: .25rem;
+  padding-bottom: .5rem;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+.active {
+  white-space: nowrap;
+  border-bottom-width: 2px;
+  --tw-border-opacity: 1;
+  border-color: rgb(14 165 233 / var(--tw-border-opacity));
+  padding-left: .25rem;
+  padding-right: .25rem;
+  padding-bottom: .5rem;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  --tw-text-opacity: 1;
+  color: rgb(56 189 248 / var(--tw-text-opacity));
+}
+.border-styled {
+  border-color: #1118271a;
+}

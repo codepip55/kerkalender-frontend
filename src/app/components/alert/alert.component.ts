@@ -16,18 +16,18 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     templateUrl: './alert.component.html',
     styleUrl: './alert.component.scss',
     animations: [
-        trigger('toast', [
-            transition(':enter', [
-                style({
-                    opacity: 0,
-                    transform: 'translateX(100%)'
-                }),
-                animate('500ms ease', style({
-                    opacity: 1,
-                    transform: 'translateX(0)'
-                })),
-            ]),
+      trigger('toast', [
+        transition(':enter', [
+          style({
+            opacity: 0,
+            transform: 'translateX(100%)'
+          }),
+          animate('500ms ease', style({
+            opacity: 1,
+            transform: 'translateX(0)'
+          })),
         ]),
+      ]),
     ]
 })
 export class AlertComponent implements OnInit, OnDestroy {

@@ -4,7 +4,7 @@ import { AlertComponent } from './components/alert/alert.component';
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { NavComponent } from './components/nav/nav.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule, NgIf } from '@angular/common';
 import { UserService } from './services/user.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 

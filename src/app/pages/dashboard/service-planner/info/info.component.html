@@ -1,0 +1,129 @@
+<form [formGroup]="serviceForm" (ngSubmit)="onSubmit()">
+  <div class="mt-5">
+    <div class="grid grid-cols-3 space-x-5">
+      <div class="bg-white p-5">
+        <div class="text-xl font-bold">Algemene Informatie</div>
+
+        <div class="mt-5 space-y-5">
+          <div>
+            <label for="title">Titel</label>
+            <input type="text" name="title" id="title" autocomplete="title" formControlName="title">
+          </div>
+          <div>
+            <label for="date">Datum</label>
+            <input type="date" name="date" id="date" autocomplete="date" formControlName="date">
+          </div>
+          <div class="grid grid-cols-2">
+            <div class="mr-2">
+              <label for="start-time">Start Tijd</label>
+              <input type="time" name="start-time" id="start-time" autocomplete="start-time" formControlName="startTime">
+            </div>
+            <div>
+              <label for="end-time">Eind Tijd</label>
+              <input type="time" name="end-time" id="end-time" autocomplete="end-time" formControlName="endTime">
+            </div>
+          </div>
+          <div>
+            <label for="location">Locatie</label>
+            <div class="mt-2 grid grid-cols-1">
+              <select id="location" name="location" autocomplete="location" formControlName="location">
+                <option value="Reggestroom (Reggestraat 100, Enter)">Reggestroom (Reggestraat 100, Enter)</option>
+                <option value="Online">Online</option>
+                <option value="Anders">Anders</option>
+              </select>
+              <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <label for="location">Service Manager</label>
+            <div class="mt-2 grid grid-cols-1">
+              <select id="manager" name="manager" autocomplete="manager" formControlName="manager">
+                <option value=""></option>
+                <option value="1">Web Dev 01</option>
+                <option value="2">Web Dev 02</option>
+                <option value="3">Web Dev 03</option>
+              </select>
+              <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-5">
+        <div class="text-xl font-bold">Teams</div>
+
+        <div class="mt-5">
+          <div class="">
+            <label for="team">Team Toevoegen</label>
+            <div class="flex w-full">
+              <div class="mt-2 grid grid-cols-1 w-full mr-2">
+                <select id="team" name="team" autocomplete="team" #teamName>
+                  <option value=""></option>
+                  <option value="Worship">Worship</option>
+                </select>
+                <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+                  <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <button type="button" class="cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 mt-2" (click)="addTeam(teamName.value)">Toevoegen</button>
+            </div>
+          </div>
+
+          <div class="border border-gray-200 rounded-md p-3 mt-5" *ngFor="let team of teams.controls; let i = index">
+            <div class="text-md">{{ team.get('team')?.value }}</div>
+            <div class="">
+              <label for="position">Positie Toevoegen</label>
+              <div class="flex w-full">
+                <input type="text" id="position" name="position" autocomplete="position" class="mr-2" #positionName>
+                <button type="button" class="cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 mt-2" (click)="addPosition(i, positionName.value)">Toevoegen</button>
+              </div>
+            </div>
+            <div class="mt-5 text-sm space-y-5">
+              <div *ngFor="let position of team.get('positions')?.value; let j = index">
+                <div class="">{{ position }}</div>
+                <div class="mt-2 space-y-3">
+
+                  <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                      <div class="avatar mr-4">JH</div>
+                      <div class="text-sm/6">
+                        <p class="font-semibold text-gray-900">
+                          <span class="absolute"></span>
+                          Jan Hendrik
+                        </p>
+                        <p class="text-gray-600">Team Leader</p>
+                      </div>
+                    </div>
+
+                    <div class="">
+                      <a href="">
+                        <fa-icon class="fa-xl text-primary-600" [icon]="faCircleCheck"></fa-icon>
+                      </a>
+                      <a href="" class="hidden">
+                        <fa-icon class="fa-xl text-secondary-500" [icon]="faCircleQuestion"></fa-icon>
+                      </a>
+                      <a href="" class="hidden">
+                        <fa-icon class="fa-xl text-gray-400" [icon]="faCircleXmark"></fa-icon>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-5">
+
+      </div>
+    </div>
+    <div class="mt-3">
+      <button type="submit" class="cursor-pointer rounded-md bg-secondary text-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-secondary/90 mt-2">
+        <fa-icon class="fa-lg mr-2" [icon]="faFloppyDisk"></fa-icon>Opslaan
+      </button>
+    </div>
+  </div>
+</form>
