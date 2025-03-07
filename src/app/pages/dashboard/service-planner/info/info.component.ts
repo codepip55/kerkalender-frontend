@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faCircleCheck, faCircleQuestion, faCircleXmark } from '@fortawesome/free-regular-svg-icons';
+import { faCircleCheck, faCircleQuestion, faCircleXmark, faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -17,4 +17,5 @@ export class InfoComponent {
   protected readonly faCircleCheck = faCircleCheck;
   protected readonly faCircleXmark = faCircleXmark;
   protected readonly faTrash = faTrash;
+  protected readonly faFloppyDisk = faFloppyDisk;
 }
