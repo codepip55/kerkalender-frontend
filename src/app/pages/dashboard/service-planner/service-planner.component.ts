@@ -8,7 +8,6 @@ import { NgClass } from '@angular/common';
 @Component({
   selector: 'app-service-planner',
   imports: [
-    FaIconComponent,
     RouterOutlet,
     NgClass
   ],
@@ -16,12 +15,6 @@ import { NgClass } from '@angular/common';
   styleUrl: './service-planner.component.scss'
 })
 export class ServicePlannerComponent {
-
-  protected readonly faCircleCheck = faCircleCheck;
-  protected readonly faCircleQuestion = faCircleQuestion;
-  protected readonly faCircleXmark = faCircleXmark;
-  protected readonly faTrash = faTrash;
-
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {
   }
 

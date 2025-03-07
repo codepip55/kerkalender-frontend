@@ -118,7 +118,6 @@ export class UserService implements OnDestroy {
       first()
     ).subscribe({
       next: (res) => {
-        console.log('Silent Auth Called')
         this.currentUserSubject.next(res.user);
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires

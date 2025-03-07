@@ -12,11 +12,11 @@ export const routes: Routes = [
   { path: 'auth_callback', component: HomeComponent },
   // Dashboard
   { path: 'dashboard', redirectTo: 'dashboard/home', pathMatch: 'full' },
-  { path: 'dashboard/home', component: DashboardComponent, },
+  { path: 'dashboard/home', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'dashboard/services/:id', component: ServicePlannerComponent, children: [
       { path: 'info', component: InfoComponent },
       { path: 'setlist', component: SetlistComponent },
       { path: '', redirectTo: 'info', pathMatch: 'full' }
-    ]},
+    ], canActivateChild: [AuthGuard] },
   { path: 'dashboard/calendar', component: CalendarComponent }
 ];
