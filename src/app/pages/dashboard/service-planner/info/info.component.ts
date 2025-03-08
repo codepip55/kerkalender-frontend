@@ -5,6 +5,8 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgFor } from '@angular/common';
 import { AlertService } from '../../../../services/alert.service';
+import { ApiService } from '../../../../services/api.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-info',
@@ -18,7 +20,7 @@ import { AlertService } from '../../../../services/alert.service';
 })
 export class InfoComponent implements OnInit{
 
-  constructor(private alertService: AlertService) {
+  constructor(private alertService: AlertService, private apiService: ApiService) {
   }
 
   @ViewChild('positionName') positionName!: HTMLInputElement;
@@ -76,8 +78,28 @@ export class InfoComponent implements OnInit{
   }
   onSubmit() {
     if (this.serviceForm.valid) {
+      const res = this.apiService.createService({
+        date: this.serviceForm.value.date,
+        start_time: this.serviceForm.value.startTime,
+        end_time: this.serviceForm.value.endTime,
+        location: this.serviceForm.value.location,
+        notes: '',
+        service_manager_id: this.serviceForm.value.manager,
+        teams: this.serviceForm.value.teams.map((team: any) => {
+          return {
+            name: team.team,
+            positions: team.positions.map((position: any) => {
+              return {
+                name: position
+              }
+            })
+          }
+        }),
+      });
+
+      // Log response
+      console.log(lastValueFrom(res));
       this.alertService.add({ type: 'success', message: 'Dienst opgeslagen' });
-      console.log(this.serviceForm.value);
     } else {
       this.alertService.add({ type: 'warning', message: 'Formulier is niet geldig.' });
       console.error('Formulier is niet geldig.');
