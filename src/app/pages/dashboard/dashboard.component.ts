@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faCircleCheck, faCircleQuestion, faCircleRight } from '@fortawesome/free-regular-svg-icons';
+import { faCircleCheck, faCircleQuestion, faCircleRight, faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,4 +19,13 @@ export class DashboardComponent {
   protected readonly faCircleCheck = faCircleCheck;
   protected readonly faCircleXmark = faCircleXmark;
   protected readonly faCircleQuestion = faCircleQuestion;
+  protected readonly faFloppyDisk = faFloppyDisk;
+  protected readonly faPlus = faPlus;
+
+  constructor(private router: Router) {
+  }
+
+  newService() {
+    this.router.navigate(['/dashboard/services/new']);
+  }
 }

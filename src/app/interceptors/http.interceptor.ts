@@ -3,8 +3,15 @@ import { inject } from '@angular/core';
 import { UserService } from '../services/user.service';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
+  const CsrfHeaderName = 'X-XSRF-TOKEN';
   const ApiUrl = inject(UserService).apiUrl;
   const token = inject(UserService).token;
+
+  if (req.method === 'POST' || req.method === 'PUT' || req.method === 'DELETE') {
+    if (token !== null && !req.headers.has(CsrfHeaderName)) {
+      req = req.clone({ headers: req.headers.set(CsrfHeaderName, token )});
+    }
+  }
 
   if (req.url.match(ApiUrl)) {
     if (token !== undefined) {
