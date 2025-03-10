@@ -4,7 +4,7 @@ import { catchError, Observable, of } from 'rxjs';
 import { CreateServiceDto } from '../models/dtos/service.dto';
 import { AlertService } from './alert.service';
 
-const apiUrl = 'http://localhost:8000/api/';
+const apiUrl = 'https://core.pepijncolenbrander.com/api/';
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +15,7 @@ export class ApiService {
   ) { }
   private handleError<T>(err: any, res: T, action: string): Observable<T> {
     console.error(err);
-    this.alertService.add({ type: 'warning', message: err.error.message ? err.error.message : `Het is niet gelukt om '${action}' uit te voeren.` });
+    this.alertService.add({ type: 'warning', message: err.error ? err.error.message : `Het is niet gelukt om '${action}' uit te voeren.` });
     return of(res);
   }
 
@@ -25,6 +25,7 @@ export class ApiService {
    * Requires: date, start_time, end_time, location, notes (empty), service_manager_id, teams
    */
   createService(dto: CreateServiceDto) {
+    console.log(dto)
      return this.http.post(apiUrl + 'services', dto).pipe(
       catchError(err => this.handleError(err, { service: null }, 'dienst aanmaken'))
     );

@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCircleCheck, faCircleQuestion, faCircleXmark, faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCross, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgFor } from '@angular/common';
 import { AlertService } from '../../../../services/alert.service';
 import { ApiService } from '../../../../services/api.service';
 import { lastValueFrom } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-info',
@@ -20,7 +21,7 @@ import { lastValueFrom } from 'rxjs';
 })
 export class InfoComponent implements OnInit{
 
-  constructor(private alertService: AlertService, private apiService: ApiService) {
+  constructor(private alertService: AlertService, private apiService: ApiService, private route: ActivatedRoute) {
   }
 
   @ViewChild('positionName') positionName!: HTMLInputElement;
@@ -44,6 +45,15 @@ export class InfoComponent implements OnInit{
       manager: new FormControl('', Validators.required),
       teams: new FormArray([])
     })
+
+    // Initialize if id in route is "new"
+    if (this.route.parent?.snapshot.paramMap.get('id') === 'new') {
+      this.serviceForm.patchValue({
+        date: new Date().toISOString().split('T')[0],
+        startTime: '11:00',
+        endTime: '12:30',
+      });
+    }
   }
   get teams () {
     return this.serviceForm.get('teams') as FormArray;
@@ -79,7 +89,7 @@ export class InfoComponent implements OnInit{
   onSubmit() {
     if (this.serviceForm.valid) {
       const res = this.apiService.createService({
-        date: this.serviceForm.value.date,
+        date: this.serviceForm.value.date.toString(),
         start_time: this.serviceForm.value.startTime,
         end_time: this.serviceForm.value.endTime,
         location: this.serviceForm.value.location,
@@ -98,11 +108,22 @@ export class InfoComponent implements OnInit{
       });
 
       // Log response
-      console.log(lastValueFrom(res));
-      this.alertService.add({ type: 'success', message: 'Dienst opgeslagen' });
+      // If response is successful, log success message
+      lastValueFrom(res).then((res) => {
+        console.log(res);
+        // @ts-ignore
+        if (res.service) {
+          this.alertService.add({ type: 'success', message: 'Dienst opgeslagen' });
+        } else {
+          this.alertService.add({ type: 'warning', message: 'Het is niet gelukt om de dienst op te slaan.' });
+        }
+      });
     } else {
       this.alertService.add({ type: 'warning', message: 'Formulier is niet geldig.' });
       console.error('Formulier is niet geldig.');
     }
   }
+
+  protected readonly faCross = faCross;
+  protected readonly faXmark = faXmark;
 }
