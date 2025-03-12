@@ -1,4 +1,4 @@
 #!/bin/sh
 if [ "$GIT_BRANCH" = "master" ]; then
-  sed -i 's|API_URL: "http://localhost:3000/api/"|API_URL: "https://core.pepijncolenbrander.com/api/"|g' src/app/app.config.ts
+  sed -i 's|"http://localhost:8000/api/"|"https://core.pepijncolenbrander.com/api/"|g' src/app/app.config.ts
 fi
