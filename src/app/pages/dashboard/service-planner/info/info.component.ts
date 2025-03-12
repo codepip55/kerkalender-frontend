@@ -6,8 +6,7 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } fr
 import { NgFor } from '@angular/common';
 import { AlertService } from '../../../../services/alert.service';
 import { ApiService } from '../../../../services/api.service';
-import { lastValueFrom } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-info',
@@ -21,7 +20,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class InfoComponent implements OnInit{
 
-  constructor(private alertService: AlertService, private apiService: ApiService, private route: ActivatedRoute) {
+  constructor(private alertService: AlertService, private apiService: ApiService, private route: ActivatedRoute, private router: Router) {
   }
 
   @ViewChild('positionName') positionName!: HTMLInputElement;
@@ -89,11 +88,12 @@ export class InfoComponent implements OnInit{
   onSubmit() {
     if (this.serviceForm.valid) {
       const res = this.apiService.createService({
+        title: this.serviceForm.value.title,
         date: this.serviceForm.value.date.toString(),
         start_time: this.serviceForm.value.startTime,
         end_time: this.serviceForm.value.endTime,
         location: this.serviceForm.value.location,
-        notes: '',
+        notes: 'test',
         service_manager_id: this.serviceForm.value.manager,
         teams: this.serviceForm.value.teams.map((team: any) => {
           return {
@@ -107,17 +107,14 @@ export class InfoComponent implements OnInit{
         }),
       });
 
-      // Log response
-      // If response is successful, log success message
-      lastValueFrom(res).then((res) => {
-        console.log(res);
+      res.subscribe({ next: (data) => {
+        this.alertService.add({ type: 'success', message: 'Service is aangemaakt.' });
         // @ts-ignore
-        if (res.service) {
-          this.alertService.add({ type: 'success', message: 'Dienst opgeslagen' });
-        } else {
-          this.alertService.add({ type: 'warning', message: 'Het is niet gelukt om de dienst op te slaan.' });
-        }
-      });
+        this.router.navigate(['/dashboard/services/' + data.id]);
+      }, error: (error) => {
+        this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
+        console.error(error);
+      }});
     } else {
       this.alertService.add({ type: 'warning', message: 'Formulier is niet geldig.' });
       console.error('Formulier is niet geldig.');

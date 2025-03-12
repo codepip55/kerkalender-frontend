@@ -26,9 +26,18 @@ export class ApiService {
    * Requires: date, start_time, end_time, location, notes (empty), service_manager_id, teams
    */
   createService(dto: CreateServiceDto) {
-    console.log(dto)
      return this.http.post(this.apiUrl + 'services', dto).pipe(
       catchError(err => this.handleError(err, { service: null }, 'dienst aanmaken'))
+    );
+  }
+
+  /**
+   * Get all services
+   * API: GET /api/services
+   */
+  getServices() {
+    return this.http.get(this.apiUrl + 'services').pipe(
+      catchError(err => this.handleError(err, [], 'diensten ophalen'))
     );
   }
 }
