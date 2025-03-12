@@ -1,17 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, of } from 'rxjs';
 import { CreateServiceDto } from '../models/dtos/service.dto';
 import { AlertService } from './alert.service';
 
-const apiUrl = 'https://core.pepijncolenbrander.com/api/';
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   constructor(
     private http: HttpClient,
-    private alertService: AlertService
+    private alertService: AlertService,
+    @Inject('API_URL') private apiUrl: string
   ) { }
   private handleError<T>(err: any, res: T, action: string): Observable<T> {
     console.error(err);
@@ -26,7 +26,7 @@ export class ApiService {
    */
   createService(dto: CreateServiceDto) {
     console.log(dto)
-     return this.http.post(apiUrl + 'services', dto).pipe(
+     return this.http.post(this.apiUrl + 'services', dto).pipe(
       catchError(err => this.handleError(err, { service: null }, 'dienst aanmaken'))
     );
   }

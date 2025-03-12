@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     {
       provide: 'API_URL',
-      useValue: 'https://core.pepijncolenbrander.com/api/'
+      useValue: 'https://localhost:8000/api/'
     },
 
   ],
