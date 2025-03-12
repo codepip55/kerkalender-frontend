@@ -1,10 +1,11 @@
-import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { inject, Inject, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, catchError, filter, first, Observable, of, switchMap, tap } from 'rxjs';
 import { User } from '../models/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
 import { AlertService } from './alert.service';
+import { API_URL } from '../app.config';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class UserService implements OnDestroy {
   private loadingSubject: BehaviorSubject<boolean>;
   private refreshTimeout: ReturnType<typeof setTimeout>;
   private subscriptions: any[] = [];
+  private apiUrl = inject(API_URL);
 
   public token$: Observable<string>;
   public currentUser$: Observable<User | null>;
@@ -26,7 +28,6 @@ export class UserService implements OnDestroy {
     private router: Router,
     private http: HttpClient,
     private alertService: AlertService,
-    @Inject('API_URL') public apiUrl: string
   ) {
     this.currentUserSubject = new BehaviorSubject<User | null>(null);
     this.tokenSubject = new BehaviorSubject<string>('');

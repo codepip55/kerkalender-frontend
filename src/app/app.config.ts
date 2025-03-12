@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, InjectionToken, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -14,10 +14,9 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([httpInterceptor])
     ),
     provideAnimations(),
-    {
-      provide: 'API_URL',
-      useValue: 'https://localhost:8000/api/'
-    },
-
   ],
 };
+export const API_URL = new InjectionToken<string>('API_URL', {
+  providedIn: 'root',
+  factory: () => 'https://localhost:8000/api/'
+});

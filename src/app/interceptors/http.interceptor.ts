@@ -1,11 +1,12 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject} from '@angular/core';
 import { UserService } from '../services/user.service';
+import { API_URL } from '../app.config';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   const CsrfHeaderName = 'X-XSRF-TOKEN';
   const CsrfCookieName = 'X-XSRF-TOKEN';
-  const ApiUrl = inject(UserService).apiUrl;
+  const ApiUrl = inject(API_URL);
   const token = inject(UserService).token;
 
   if (req.method === 'POST' || req.method === 'PUT' || req.method === 'DELETE') {
