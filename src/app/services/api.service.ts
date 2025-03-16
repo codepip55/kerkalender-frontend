@@ -40,4 +40,31 @@ export class ApiService {
       catchError(err => this.handleError(err, [], 'diensten ophalen'))
     );
   }
+
+  /**
+   * Get service by id
+   */
+  getService(id: number) {
+    return this.http.get(this.apiUrl + 'services/' + id).pipe(
+      catchError(err => this.handleError(err, {service: null}, 'dienst ophalen'))
+    );
+  }
+
+  /**
+   * Update service by id
+   */
+  updateService(id: number, dto: CreateServiceDto) {
+    return this.http.put(this.apiUrl + 'services/' + id, dto).pipe(
+      catchError(err => this.handleError(err, {service: null}, 'dienst bijwerken'))
+    );
+  }
+
+  /**
+   * Delete service by id
+   */
+  deleteService(id: number) {
+    return this.http.delete(this.apiUrl + 'services/' + id).pipe(
+      catchError(err => this.handleError(err, {service: null}, 'dienst verwijderen'))
+    );
+  };
 }

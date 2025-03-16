@@ -7,6 +7,9 @@ import { NgFor } from '@angular/common';
 import { AlertService } from '../../../../services/alert.service';
 import { ApiService } from '../../../../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { lastValueFrom, Observable } from 'rxjs';
+import { format } from 'date-fns';
+import { Service } from '../../../../models/service.model';
 
 @Component({
   selector: 'app-info',
@@ -18,7 +21,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './info.component.html',
   styleUrl: './info.component.scss'
 })
-export class InfoComponent implements OnInit{
+export class InfoComponent implements OnInit {
 
   constructor(private alertService: AlertService, private apiService: ApiService, private route: ActivatedRoute, private router: Router) {
   }
@@ -33,8 +36,10 @@ export class InfoComponent implements OnInit{
   protected readonly faFloppyDisk = faFloppyDisk;
 
   serviceForm!: FormGroup;
+  id: string;
+  confirmDelete = false;
 
-  ngOnInit() {
+  async ngOnInit() {
     this.serviceForm = new FormGroup({
       title: new FormControl('Zondagochtend', Validators.required),
       date: new FormControl('', Validators.required),
@@ -45,14 +50,43 @@ export class InfoComponent implements OnInit{
       teams: new FormArray([])
     })
 
-    // Initialize if id in route is "new"
-    if (this.route.parent?.snapshot.paramMap.get('id') === 'new') {
+    const id = this.route.parent?.snapshot.paramMap.get('id');
+    this.id = id!;
+    // Initialize form
+    if (id === 'new') {
       this.serviceForm.patchValue({
         date: new Date().toISOString().split('T')[0],
         startTime: '11:00',
         endTime: '12:30',
       });
+    } else {
+      const service = await this.getService(id!);
+      this.serviceForm.patchValue({
+        title: service.title,
+        date: service.date,
+        startTime: this.formatTime(service.start_time),
+        endTime: this.formatTime(service.end_time),
+        location: service.location,
+        manager: service.service_manager_id
+      });
+      service.teams.forEach((team: any) => {
+        const teamGroup = new FormGroup({
+          team: new FormControl(team.name, Validators.required),
+          positions: new FormArray([])
+        });
+        team.positions.forEach((position: any) => {
+          (teamGroup.get('positions') as FormArray).push(new FormControl(position.name, Validators.required));
+        });
+        (this.serviceForm.get('teams') as FormArray).push(teamGroup);
+      });
     }
+  }
+  private async getService(id: string): Promise<Service> {
+    const res = this.apiService.getService(parseInt(id));
+    const service = await lastValueFrom(res);
+    console.log(service);
+    // @ts-ignore
+    return service;
   }
   get teams () {
     return this.serviceForm.get('teams') as FormArray;
@@ -87,37 +121,101 @@ export class InfoComponent implements OnInit{
   }
   onSubmit() {
     if (this.serviceForm.valid) {
-      const res = this.apiService.createService({
-        title: this.serviceForm.value.title,
-        date: this.serviceForm.value.date.toString(),
-        start_time: this.serviceForm.value.startTime,
-        end_time: this.serviceForm.value.endTime,
-        location: this.serviceForm.value.location,
-        notes: 'test',
-        service_manager_id: this.serviceForm.value.manager,
-        teams: this.serviceForm.value.teams.map((team: any) => {
-          return {
-            name: team.team,
-            positions: team.positions.map((position: any) => {
-              return {
-                name: position
-              }
-            })
-          }
-        }),
-      });
+      if (this.id === 'new') {
+        this.apiService.createService({
+          title: this.serviceForm.value.title,
+          date: this.serviceForm.value.date.toString(),
+          start_time: this.serviceForm.value.startTime,
+          end_time: this.serviceForm.value.endTime,
+          location: this.serviceForm.value.location,
+          notes: 'test',
+          service_manager_id: this.serviceForm.value.manager,
+          teams: this.serviceForm.value.teams.map((team: any) => {
+            return {
+              name: team.team,
+              positions: team.positions.map((position: any) => {
+                return {
+                  name: position
+                }
+              })
+            }
+          }),
+        }).subscribe({ next: (data) => {
+          console.log('Service Aangemaakt', data);
+          this.alertService.add({ type: 'success', message: 'Service is aangemaakt.' });
+          // @ts-ignore
+          this.router.navigate(['/dashboard/services/' + data.id]);
 
-      res.subscribe({ next: (data) => {
-        this.alertService.add({ type: 'success', message: 'Service is aangemaakt.' });
-        // @ts-ignore
-        this.router.navigate(['/dashboard/services/' + data.id]);
-      }, error: (error) => {
-        this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
-        console.error(error);
-      }});
+          }, error: (error) => {
+            this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
+            console.error(error);
+          }});
+      } else {
+        this.apiService.updateService(parseInt(this.id), {
+          title: this.serviceForm.value.title,
+          date: this.serviceForm.value.date.toString(),
+          start_time: this.serviceForm.value.startTime,
+          end_time: this.serviceForm.value.endTime,
+          location: this.serviceForm.value.location,
+          notes: 'test',
+          service_manager_id: this.serviceForm.value.manager,
+          teams: this.serviceForm.value.teams.map((team: any) => {
+            return {
+              name: team.team,
+              positions: team.positions.map((position: any) => {
+                return {
+                  name: position
+                }
+              })
+            }
+          })
+        }).subscribe({ next: (data) => {
+            console.log('Service Geupdatet', data);
+            this.alertService.add({ type: 'success', message: 'Service is geupdatet.' });
+            // @ts-ignore
+            this.router.navigate(['/dashboard/services/' + data.id]);
+          }, error: (error) => {
+            this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
+            console.error(error);
+          }});
+      }
     } else {
       this.alertService.add({ type: 'warning', message: 'Formulier is niet geldig.' });
       console.error('Formulier is niet geldig.');
+    }
+  }
+
+  formatTime(time: string) {
+    const date = new Date();
+    const [hours, minutes, seconds] = time.split(':');
+    date.setHours(parseInt(hours, 10), parseInt(minutes, 10), parseInt(seconds, 10));
+
+    return date.toLocaleTimeString("nl-NL", {hour: "2-digit", minute: "2-digit"});
+  }
+  formatDate(date: string) {
+    const isoDate = new Date(date).toISOString();
+    return format(new Date(isoDate), 'dd/MM/yyyy');
+  }
+  deleteService() {
+    if (this.id === 'new') {
+      this.router.navigate(['/dashboard/services']);
+      this.alertService.add({ type: 'warning', message: 'Service is niet aangemaakt.' });
+    }
+    if (this.confirmDelete) {
+      this.apiService.deleteService(parseInt(this.id)).subscribe({
+        next: (data) => {
+          console.log(data);
+          this.alertService.add({ type: 'success', message: 'Service is verwijderd.' });
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
+          console.error(error);
+        }
+      });
+    } else {
+      this.confirmDelete = true;
+      this.alertService.add({ type: 'warning', message: 'Weet je zeker dat je deze service wilt verwijderen?' });
     }
   }
 

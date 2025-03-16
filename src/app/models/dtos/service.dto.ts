@@ -9,6 +9,7 @@ export class CreateServiceDto {
   teams: TeamsDto[];
 }
 export class UpdateServiceDto {
+  title: string;
   date: string;
   start_time: string;
   end_time: string;
