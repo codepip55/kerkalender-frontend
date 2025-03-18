@@ -80,6 +80,25 @@ export class InfoComponent implements OnInit {
         (this.serviceForm.get('teams') as FormArray).push(teamGroup);
       });
     }
+
+    // Listen to page leave
+    window.addEventListener('beforeunload', (event) => {
+      if (!this.confirmLeave()) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    });
+  }
+  private confirmLeave() {
+    if (this.serviceForm.dirty) {
+      return confirm('Weet je zeker dat je de pagina wilt verlaten? Je hebt nog niet opgeslagen.');
+    }
+    return true;
+  }
+  cancel() {
+    if (this.confirmLeave()) {
+      this.router.navigate(['/dashboard']);
+    }
   }
   private async getService(id: string): Promise<Service> {
     const res = this.apiService.getService(parseInt(id));
@@ -119,6 +138,10 @@ export class InfoComponent implements OnInit {
 
     positions.push(new FormControl(positionName, Validators.required));
   }
+  removePosition(teamIndex: number, positionIndex: number) {
+    const positions = this.teams.at(teamIndex).get('positions') as FormArray;
+    positions.removeAt(positionIndex);
+  }
   onSubmit() {
     if (this.serviceForm.valid) {
       if (this.id === 'new') {
@@ -151,6 +174,25 @@ export class InfoComponent implements OnInit {
             console.error(error);
           }});
       } else {
+        console.log({
+          title: this.serviceForm.value.title,
+          date: this.serviceForm.value.date.toString(),
+          start_time: this.serviceForm.value.startTime,
+          end_time: this.serviceForm.value.endTime,
+          location: this.serviceForm.value.location,
+          notes: 'test',
+          service_manager_id: this.serviceForm.value.manager,
+          teams: this.serviceForm.value.teams.map((team: any) => {
+            return {
+              name: team.team,
+              positions: team.positions.map((position: any) => {
+                return {
+                  name: position
+                }
+              })
+            }
+          })
+        });
         this.apiService.updateService(parseInt(this.id), {
           title: this.serviceForm.value.title,
           date: this.serviceForm.value.date.toString(),
