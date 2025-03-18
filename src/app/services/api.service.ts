@@ -67,4 +67,22 @@ export class ApiService {
       catchError(err => this.handleError(err, {service: null}, 'dienst verwijderen'))
     );
   };
+
+  /**
+   * Get setlist by id
+   */
+  getSetlist(id: number) {
+    return this.http.get(this.apiUrl + 'setlists/' + id).pipe(
+      catchError(err => this.handleError(err, {setlist: null}, 'setlist ophalen'))
+    );
+  }
+
+  /**
+   * Get setlist by service_id
+   */
+  getSetlistByServiceId(service_id: number) {
+    return this.http.get(this.apiUrl + 'setlists/service/' + service_id).pipe(
+      catchError(err => this.handleError(err, {setlist: null}, 'setlist ophalen'))
+    );
+  }
 }

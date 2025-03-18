@@ -5,6 +5,9 @@ import { faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AlertService } from '../../../../services/alert.service';
 import { NgFor } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { ApiService } from '../../../../services/api.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-setlist',
@@ -18,10 +21,12 @@ import { NgFor } from '@angular/common';
 })
 export class SetlistComponent implements OnInit{
 
-  constructor(private alertService: AlertService) {
+  constructor(private alertService: AlertService, private route: ActivatedRoute, private apiService: ApiService) {
   }
 
   setlistForm!: FormGroup;
+  service_id: number;
+  setlist_id: number;
 
   protected readonly faTrash = faTrash;
   protected readonly faFloppyDisk = faFloppyDisk;
@@ -30,6 +35,18 @@ export class SetlistComponent implements OnInit{
     this.setlistForm = new FormGroup({
       songs: new FormArray([]),
     })
+
+    this.init();
+  }
+  private async init() {
+    // Get service id from route
+    const service_id = this.route.parent?.snapshot.paramMap.get('id');
+    this.service_id = parseInt(service_id!);
+
+    // Get setlist by service_id
+    let setlist: any = this.apiService.getSetlistByServiceId(this.service_id);
+    setlist = await lastValueFrom(setlist);
+    console.log(setlist);
   }
   get songs() {
     return this.setlistForm.get('songs') as FormArray;
