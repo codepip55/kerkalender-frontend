@@ -4,6 +4,7 @@ import { catchError, Observable, of } from 'rxjs';
 import { CreateServiceDto } from '../models/dtos/service.dto';
 import { AlertService } from './alert.service';
 import { API_URL } from '../app.config';
+import { CreateSetlistDto } from '../models/dtos/setlist.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +84,15 @@ export class ApiService {
   getSetlistByServiceId(service_id: number) {
     return this.http.get(this.apiUrl + 'setlists/service/' + service_id).pipe(
       catchError(err => this.handleError(err, {setlist: null}, 'setlist ophalen'))
+    );
+  }
+
+  /**
+   * Update setlist by setlist_id
+   */
+  updateSetlist(id: number, dto: CreateSetlistDto) {
+    return this.http.put(this.apiUrl + 'setlists/' + id, dto).pipe(
+      catchError(err => this.handleError(err, {setlist: null}, 'setlist bijwerken'))
     );
   }
 }

@@ -2,10 +2,10 @@ export class CreateSetlistDto {
   songs: SongDto[];
 }
 export class SongDto {
-  name: string;
+  title: string;
   artist: string;
-  spotifyLink: string;
+  spotify_link: string;
   key: string;
-  vocalNotes: string;
-  bandNotes: string;
+  vocal_notes: string;
+  band_notes: string;
 }
