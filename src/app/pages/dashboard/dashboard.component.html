@@ -7,57 +7,17 @@
           <div>
             <div class="text-xl font-bold">Aankomende Diensten</div>
             <div class="space-y-5 mt-5">
-              <!--            Card start-->
-              <div class="flex justify-between items-center">
+              <div class="flex justify-between items-center" *ngFor="let service of services">
                 <div>
-                  <div class="font-bold text-md">Zondagochtend</div>
-                  <div class="text-sm text-gray-600">2/3/2025 | 10:00 - 12:00</div>
+                  <div class="font-bold text-md">{{ service.title }}</div>
+                  <div class="text-sm text-gray-600">{{ service.date }} | {{ service.start_time }} - {{ service.end_time }}</div>
                 </div>
                 <div class="h-full">
-                  <a href="/dashboard/services/1" class="">
+                  <a href="/dashboard/services/{{ service.id }}" class="">
                     <fa-icon class="fa-xl" [icon]="faCircleRight"></fa-icon>
                   </a>
                 </div>
               </div>
-              <!--          Card end-->
-
-              <div class="flex justify-between items-center">
-                <div>
-                  <div class="font-bold text-md">Doopdienst</div>
-                  <div class="text-sm text-gray-600">9/3/2025 | 10:00 - 12:00</div>
-                </div>
-                <div class="h-full cursor-pointer">
-                  <a href="">
-                    <fa-icon class="fa-xl" [icon]="faCircleRight"></fa-icon>
-                  </a>
-                </div>
-              </div>
-              <div class="flex justify-between items-center">
-                <div>
-                  <div class="font-bold text-md">Zondagochtend</div>
-                  <div class="text-sm text-gray-600">16/3/2025 | 10:00 - 12:00</div>
-                </div>
-                <div class="h-full cursor-pointer">
-                  <a href="">
-                    <fa-icon class="fa-xl" [icon]="faCircleRight"></fa-icon>
-                  </a>
-                </div>
-              </div>
-              <div class="flex justify-between items-center">
-                <div>
-                  <div class="font-bold text-md">Zondagochtend</div>
-                  <div class="text-sm text-gray-600">23/3/2025 | 10:00 - 12:00</div>
-                </div>
-                <div class="h-full cursor-pointer">
-                  <a href="">
-                    <fa-icon class="fa-xl" [icon]="faCircleRight"></fa-icon>
-                  </a>
-                </div>
-              </div>
-
-
-
-
             </div>
           </div>
           <div>

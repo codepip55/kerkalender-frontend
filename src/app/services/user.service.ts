@@ -1,12 +1,11 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { inject, Inject, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, catchError, filter, first, Observable, of, switchMap, tap } from 'rxjs';
 import { User } from '../models/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ApiResponse } from '../models/api-response.model';
 import { AlertService } from './alert.service';
-
-const apiUrl = 'https://core.pepijncolenbrander.com/api/';
+import { API_URL } from '../app.config';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +16,7 @@ export class UserService implements OnDestroy {
   private loadingSubject: BehaviorSubject<boolean>;
   private refreshTimeout: ReturnType<typeof setTimeout>;
   private subscriptions: any[] = [];
+  private apiUrl = inject(API_URL);
 
   public token$: Observable<string>;
   public currentUser$: Observable<User | null>;
@@ -27,7 +27,7 @@ export class UserService implements OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private alertService: AlertService
+    private alertService: AlertService,
   ) {
     this.currentUserSubject = new BehaviorSubject<User | null>(null);
     this.tokenSubject = new BehaviorSubject<string>('');
@@ -52,11 +52,11 @@ export class UserService implements OnDestroy {
 
     window.sessionStorage.setItem(nonce, JSON.stringify(state));
 
-    document.location.href = apiUrl + 'auth/kerkalender?state=' + nonce;
+    document.location.href = this.apiUrl + 'auth/kerkalender?state=' + nonce;
   }
   public logout() {
     this.loadingSubject.next(true);
-    const sub = this.http.get<any>(apiUrl + 'auth/logout').pipe(
+    const sub = this.http.get<any>(this.apiUrl + 'auth/logout').pipe(
       catchError(err => {
         console.error(err);
         this.alertService.add({ type: 'warning', message: 'Could not remove refresh token' });
@@ -83,7 +83,7 @@ export class UserService implements OnDestroy {
       tap(qs => nonce = qs.get('state') || ''),
       filter(qs => !!qs.get('code')),
       first(),
-      switchMap(qs => this.http.get<ApiResponse>(`${apiUrl}auth/kerkalender?code=${qs.get('code')}&state=${nonce}`)),
+      switchMap(qs => this.http.get<ApiResponse>(`${this.apiUrl}auth/kerkalender?code=${qs.get('code')}&state=${nonce}`)),
     ).subscribe({ next: (res) => {
         this.currentUserSubject.next(res.user);
         this.tokenSubject.next(res.token);
@@ -114,7 +114,7 @@ export class UserService implements OnDestroy {
   }
   public silentAuth(initialLoad: boolean = false) {
     this.loadingSubject.next(true);
-    const sub = this.http.get<ApiResponse>(`${apiUrl}auth/silent`, { withCredentials: true }).pipe(
+    const sub = this.http.get<ApiResponse>(`${this.apiUrl}auth/silent`, { withCredentials: true }).pipe(
       first()
     ).subscribe({
       next: (res) => {
@@ -142,5 +142,4 @@ export class UserService implements OnDestroy {
   public get currentUser(): User | null { return this.currentUserSubject.value; }
   public get token(): string { return this.tokenSubject.value; }
   public get loggedIn(): boolean { return this.currentUser !== null; }
-  public get apiUrl(): string { return apiUrl; }
 }
