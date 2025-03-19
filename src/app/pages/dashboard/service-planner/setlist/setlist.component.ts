@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
@@ -20,7 +20,7 @@ import { SongDto } from '../../../../models/dtos/setlist.dto';
   templateUrl: './setlist.component.html',
   styleUrl: './setlist.component.scss'
 })
-export class SetlistComponent implements OnInit{
+export class SetlistComponent implements OnInit, OnDestroy {
 
   constructor(private alertService: AlertService, private route: ActivatedRoute, private apiService: ApiService) {
   }
@@ -39,6 +39,10 @@ export class SetlistComponent implements OnInit{
 
     this.init();
   }
+  ngOnDestroy() {
+    this.setlistForm.reset();
+  }
+
   private async init() {
     // Get service id from route
     const service_id = this.route.parent?.snapshot.paramMap.get('id');
