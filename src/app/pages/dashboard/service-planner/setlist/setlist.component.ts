@@ -48,7 +48,23 @@ export class SetlistComponent implements OnInit{
     let setlist: any = this.apiService.getSetlistByServiceId(this.service_id);
     setlist = await lastValueFrom(setlist);
     this.setlist_id = setlist[0].id;
-    console.log(setlist, this.setlist_id);
+    console.log(setlist);
+
+    // Init form
+    if (!setlist[0].songs) {
+      return;
+    }
+    setlist[0].songs.forEach((song: any) => {
+      const songGroup: FormGroup = new FormGroup({
+        title: new FormControl(song.song.title, Validators.required),
+        artist: new FormControl(song.song.artist),
+        spotifyLink: new FormControl(song.song.spotify_link),
+        key: new FormControl(song.key, Validators.required),
+        vocalNotes: new FormControl(song.vocal_notes),
+        bandNotes: new FormControl(song.band_notes)
+      });
+      this.songs.push(songGroup);
+    })
   }
   get songs(): FormArray {
     return this.setlistForm.get('songs') as FormArray;
