@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCircleCheck, faCircleQuestion, faCircleXmark, faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
-import { faCross, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCross, faPlus, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgFor } from '@angular/common';
 import { AlertService } from '../../../../services/alert.service';
@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom, Observable } from 'rxjs';
 import { format } from 'date-fns';
 import { Service } from '../../../../models/service.model';
+import { UserService } from '../../../../services/user.service';
 
 @Component({
   selector: 'app-info',
@@ -23,7 +24,7 @@ import { Service } from '../../../../models/service.model';
 })
 export class InfoComponent implements OnInit {
 
-  constructor(private alertService: AlertService, private apiService: ApiService, private route: ActivatedRoute, private router: Router) {
+  constructor(private alertService: AlertService, private apiService: ApiService, private route: ActivatedRoute, private router: Router, private userService: UserService) {
   }
 
   @ViewChild('positionName') positionName!: HTMLInputElement;
@@ -38,6 +39,7 @@ export class InfoComponent implements OnInit {
   serviceForm!: FormGroup;
   id: string;
   confirmDelete = false;
+  users: any = [];
 
   async ngOnInit() {
     this.serviceForm = new FormGroup({
@@ -61,6 +63,7 @@ export class InfoComponent implements OnInit {
       });
     } else {
       const service = await this.getService(id!);
+      console.log('getting service', service);
       this.serviceForm.patchValue({
         title: service.title,
         date: service.date,
@@ -75,11 +78,27 @@ export class InfoComponent implements OnInit {
           positions: new FormArray([])
         });
         team.positions.forEach((position: any) => {
-          (teamGroup.get('positions') as FormArray).push(new FormControl(position.name, Validators.required));
+          (teamGroup.get('positions') as FormArray).push(new FormGroup({
+            name: new FormControl(position.name, Validators.required),
+            members: position.members ? new FormArray(position.members.map((member: any) => new FormControl(member))) : new FormArray([])
+          }));
         });
         (this.serviceForm.get('teams') as FormArray).push(teamGroup);
       });
     }
+
+    // Get all users
+    this.apiService.getUsers().subscribe({
+      next: (users: any) => {
+        users.forEach((user: any) => {
+          this.users.push([user.id, user.name]);
+        });
+      },
+      error: (error) => {
+        this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
+        console.error(error);
+      }
+    });
 
     // Listen to page leave
     window.addEventListener('beforeunload', (event) => {
@@ -136,14 +155,60 @@ export class InfoComponent implements OnInit {
       }
     }
 
-    positions.push(new FormControl(positionName, Validators.required));
+    const newPosition = new FormGroup({
+      name: new FormControl(positionName, Validators.required),
+      members: new FormArray([])
+    })
+    positions.push(newPosition);
   }
   removePosition(teamIndex: number, positionIndex: number) {
     const positions = this.teams.at(teamIndex).get('positions') as FormArray;
     positions.removeAt(positionIndex);
   }
+  addUser(teamIndex: number, positionIndex:number, userId: any) {
+    // Get user by id ([id, name])
+    const user = this.users.find((u: any) => u[0] == userId);
+    user.user_id = user[0];
+    // Add user_id to position.members
+    const positions = this.teams.at(teamIndex).get('positions') as FormArray;
+    const lastPosition = positions.at(positionIndex) as FormGroup;
+    const members = lastPosition.get('members') as FormArray;
+    members.push(new FormControl(user));
+  }
+  removeUser(teamIndex: number, positionIndex: number, userIndex: number) {
+    const positions = this.teams.at(teamIndex).get('positions') as FormArray;
+    const lastPosition = positions.at(positionIndex) as FormGroup;
+    const members = lastPosition.get('members') as FormArray;
+    members.removeAt(userIndex);
+  }
   onSubmit() {
     if (this.serviceForm.valid) {
+      console.log('request', {
+        title: this.serviceForm.value.title,
+        date: this.serviceForm.value.date.toString(),
+        start_time: this.serviceForm.value.startTime,
+        end_time: this.serviceForm.value.endTime,
+        location: this.serviceForm.value.location,
+        notes: 'test',
+        service_manager_id: this.serviceForm.value.manager,
+        teams: this.serviceForm.value.teams.map((team: any) => {
+          return {
+            name: team.team,
+            positions: team.positions.map((position: any) => {
+              return {
+                name: position.name,
+                members: position.members.map((user: any) => {
+                  user.user_id = user[0];
+                  return {
+                    user_id: user.user_id,
+                    status: 'waiting'
+                  };
+                })
+              }
+            })
+          }
+        })
+      });
       if (this.id === 'new') {
         this.apiService.createService({
           title: this.serviceForm.value.title,
@@ -158,7 +223,14 @@ export class InfoComponent implements OnInit {
               name: team.team,
               positions: team.positions.map((position: any) => {
                 return {
-                  name: position
+                  name: position.name,
+                  members: position.members.map((user: any) => {
+                    user.user_id = user[0];
+                    return {
+                      user_id: user.user_id,
+                      status: 'waiting'
+                    };
+                  })
                 }
               })
             }
@@ -167,6 +239,10 @@ export class InfoComponent implements OnInit {
           console.log('Service Aangemaakt', data);
           this.alertService.add({ type: 'success', message: 'Service is aangemaakt.' });
           // @ts-ignore
+            if (data.id === undefined) {
+              return;
+            }
+          // @ts-ignore
           this.router.navigate(['/dashboard/services/' + data.id]);
 
           }, error: (error) => {
@@ -174,25 +250,6 @@ export class InfoComponent implements OnInit {
             console.error(error);
           }});
       } else {
-        console.log({
-          title: this.serviceForm.value.title,
-          date: this.serviceForm.value.date.toString(),
-          start_time: this.serviceForm.value.startTime,
-          end_time: this.serviceForm.value.endTime,
-          location: this.serviceForm.value.location,
-          notes: 'test',
-          service_manager_id: this.serviceForm.value.manager,
-          teams: this.serviceForm.value.teams.map((team: any) => {
-            return {
-              name: team.team,
-              positions: team.positions.map((position: any) => {
-                return {
-                  name: position
-                }
-              })
-            }
-          })
-        });
         this.apiService.updateService(parseInt(this.id), {
           title: this.serviceForm.value.title,
           date: this.serviceForm.value.date.toString(),
@@ -206,7 +263,14 @@ export class InfoComponent implements OnInit {
               name: team.team,
               positions: team.positions.map((position: any) => {
                 return {
-                  name: position
+                  name: position.name,
+                  members: position.members.map((user: any) => {
+                    user.user_id = user[0];
+                    return {
+                      user_id: user.user_id,
+                      status: 'waiting'
+                    };
+                  })
                 }
               })
             }
@@ -214,6 +278,10 @@ export class InfoComponent implements OnInit {
         }).subscribe({ next: (data) => {
             console.log('Service Geupdatet', data);
             this.alertService.add({ type: 'success', message: 'Service is geupdatet.' });
+            // @ts-ignore
+            if (data.id === undefined) {
+              return;
+            }
             // @ts-ignore
             this.router.navigate(['/dashboard/services/' + data.id]);
           }, error: (error) => {
@@ -261,6 +329,22 @@ export class InfoComponent implements OnInit {
     }
   }
 
+  getInitials(user_id: any) {
+    const user = this.users.find((u: any) => u[0] == user_id);
+    if (user) {
+      return user[1].split(' ').map((name: string) => name.charAt(0)).join('');
+    }
+    return '';
+  }
+  getName(user_id: any) {
+    const user = this.users.find((u: any) => u[0] == user_id);
+    if (user) {
+      return user[1];
+    }
+    return '';
+  }
+
   protected readonly faCross = faCross;
   protected readonly faXmark = faXmark;
+  protected readonly faPlus = faPlus;
 }

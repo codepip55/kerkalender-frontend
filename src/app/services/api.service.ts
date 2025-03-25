@@ -95,4 +95,31 @@ export class ApiService {
       catchError(err => this.handleError(err, {setlist: null}, 'setlist bijwerken'))
     );
   }
+
+  /**
+   * Get all users
+   */
+  getUsers() {
+    return this.http.get(this.apiUrl + 'users').pipe(
+      catchError(err => this.handleError(err, [], 'gebruikers ophalen'))
+    );
+  }
+
+  /**
+   * Get user by id
+   */
+  getUser(id: number) {
+    return this.http.get(this.apiUrl + 'users/' + id).pipe(
+      catchError(err => this.handleError(err, {user: null}, 'gebruiker ophalen'))
+    );
+  }
+
+  /**
+   * Get user in leader team
+   */
+  getLeaderTeamUser() {
+    return this.http.get(this.apiUrl + 'users/leader').pipe(
+      catchError(err => this.handleError(err, {user: null}, 'gebruiker ophalen'))
+    );
+  }
 }
