@@ -1,6 +1,6 @@
 <form [formGroup]="serviceForm" (ngSubmit)="onSubmit()">
   <div class="mt-5">
-    <div class="grid grid-cols-3 space-x-5">
+    <div class="grid grid-cols-2 space-x-5">
       <div class="bg-white p-5">
         <div class="text-xl font-bold">Algemene Informatie</div>
 
@@ -40,10 +40,8 @@
             <label for="location">Service Manager</label>
             <div class="mt-2 grid grid-cols-1">
               <select id="manager" name="manager" autocomplete="manager" formControlName="manager">
-                <option value=""></option>
-                <option value="1">Web Dev 01</option>
-                <option value="2">Web Dev 02</option>
-                <option value="3">Web Dev 03</option>
+<!--                <option value=""></option>-->
+                <option value="0">System Admin</option>
               </select>
               <svg class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
                 <path fill-rule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -119,13 +117,7 @@
 
                     <div class="flex gap-2">
                       <a href="">
-                        <fa-icon class="fa-xl text-primary-600" [icon]="faCircleCheck"></fa-icon>
-                      </a>
-                      <a href="" class="hidden">
-                        <fa-icon class="fa-xl text-secondary-500" [icon]="faCircleQuestion"></fa-icon>
-                      </a>
-                      <a href="" class="hidden">
-                        <fa-icon class="fa-xl text-gray-400" [icon]="faCircleXmark"></fa-icon>
+                        <fa-icon class="fa-xl {{ getIconClass(user['status']) }}" [icon]="getIcon(user['status'])"></fa-icon>
                       </a>
                       <div class="cursor-pointer" (click)="removeUser(i, j, k)">
                         <fa-icon class="fa-lg text-gray-400 mr-2" [icon]="faXmark"></fa-icon>
@@ -138,9 +130,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="bg-white p-5">
-
       </div>
     </div>
     <div class="mt-3 flex justify-between">

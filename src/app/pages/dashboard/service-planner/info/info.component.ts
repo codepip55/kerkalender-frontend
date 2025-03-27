@@ -52,6 +52,7 @@ export class InfoComponent implements OnInit {
       teams: new FormArray([])
     })
 
+    this.id = '';
     const id = this.route.parent?.snapshot.paramMap.get('id');
     this.id = id!;
     // Initialize form
@@ -60,6 +61,7 @@ export class InfoComponent implements OnInit {
         date: new Date().toISOString().split('T')[0],
         startTime: '11:00',
         endTime: '12:30',
+        manager: '0'
       });
     } else {
       const service = await this.getService(id!);
@@ -165,15 +167,22 @@ export class InfoComponent implements OnInit {
     const positions = this.teams.at(teamIndex).get('positions') as FormArray;
     positions.removeAt(positionIndex);
   }
-  addUser(teamIndex: number, positionIndex:number, userId: any) {
+  addUser(teamIndex: number, positionIndex: number, userId: any) {
     // Get user by id ([id, name])
     const user = this.users.find((u: any) => u[0] == userId);
-    user.user_id = user[0];
-    // Add user_id to position.members
+    if (!user) return;
+
+    const newUser = {
+      user_id: user[0],
+      name: user[1],
+      status: 'waiting' // Default status when added
+    };
+
+    // Add user to position.members
     const positions = this.teams.at(teamIndex).get('positions') as FormArray;
-    const lastPosition = positions.at(positionIndex) as FormGroup;
-    const members = lastPosition.get('members') as FormArray;
-    members.push(new FormControl(user));
+    const positionGroup = positions.at(positionIndex) as FormGroup;
+    const members = positionGroup.get('members') as FormArray;
+    members.push(new FormControl(newUser));
   }
   removeUser(teamIndex: number, positionIndex: number, userIndex: number) {
     const positions = this.teams.at(teamIndex).get('positions') as FormArray;
@@ -183,32 +192,6 @@ export class InfoComponent implements OnInit {
   }
   onSubmit() {
     if (this.serviceForm.valid) {
-      console.log('request', {
-        title: this.serviceForm.value.title,
-        date: this.serviceForm.value.date.toString(),
-        start_time: this.serviceForm.value.startTime,
-        end_time: this.serviceForm.value.endTime,
-        location: this.serviceForm.value.location,
-        notes: 'test',
-        service_manager_id: this.serviceForm.value.manager,
-        teams: this.serviceForm.value.teams.map((team: any) => {
-          return {
-            name: team.team,
-            positions: team.positions.map((position: any) => {
-              return {
-                name: position.name,
-                members: position.members.map((user: any) => {
-                  user.user_id = user[0];
-                  return {
-                    user_id: user.user_id,
-                    status: 'waiting'
-                  };
-                })
-              }
-            })
-          }
-        })
-      });
       if (this.id === 'new') {
         this.apiService.createService({
           title: this.serviceForm.value.title,
@@ -225,10 +208,9 @@ export class InfoComponent implements OnInit {
                 return {
                   name: position.name,
                   members: position.members.map((user: any) => {
-                    user.user_id = user[0];
                     return {
                       user_id: user.user_id,
-                      status: 'waiting'
+                      status: user.status
                     };
                   })
                 }
@@ -238,13 +220,14 @@ export class InfoComponent implements OnInit {
         }).subscribe({ next: (data) => {
           console.log('Service Aangemaakt', data);
           this.alertService.add({ type: 'success', message: 'Service is aangemaakt.' });
-          // @ts-ignore
+            // @ts-ignore
             if (data.id === undefined) {
               return;
             }
-          // @ts-ignore
-          this.router.navigate(['/dashboard/services/' + data.id]);
-
+            // @ts-ignore
+            this.router.navigate(['/dashboard/services/' + data.id]);
+            // @ts-ignore
+            this.id = data.id;
           }, error: (error) => {
             this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
             console.error(error);
@@ -265,10 +248,9 @@ export class InfoComponent implements OnInit {
                 return {
                   name: position.name,
                   members: position.members.map((user: any) => {
-                    user.user_id = user[0];
                     return {
                       user_id: user.user_id,
-                      status: 'waiting'
+                      status: user.status
                     };
                   })
                 }
@@ -284,6 +266,8 @@ export class InfoComponent implements OnInit {
             }
             // @ts-ignore
             this.router.navigate(['/dashboard/services/' + data.id]);
+            // @ts-ignore
+            this.id = data.id;
           }, error: (error) => {
             this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
             console.error(error);
@@ -342,6 +326,30 @@ export class InfoComponent implements OnInit {
       return user[1];
     }
     return '';
+  }
+  getIcon(status: string) {
+    switch (status) {
+      case 'waiting':
+        return this.faCircleQuestion;
+      case 'accepted':
+        return this.faCircleCheck;
+      case 'declined':
+        return this.faCircleXmark;
+      default:
+        return this.faCircleQuestion;
+    }
+  }
+  getIconClass(status: string) {
+    switch (status) {
+      case 'waiting':
+        return 'text-secondary-500';
+      case 'accepted':
+        return 'text-primary-600';
+      case 'declined':
+        return 'text-gray-400';
+      default:
+        return 'text-secondary-500';
+    }
   }
 
   protected readonly faCross = faCross;
