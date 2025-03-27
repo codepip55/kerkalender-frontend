@@ -116,9 +116,9 @@
                     </div>
 
                     <div class="flex gap-2">
-                      <a href="">
+                      <div class="">
                         <fa-icon class="fa-xl {{ getIconClass(user['status']) }}" [icon]="getIcon(user['status'])"></fa-icon>
-                      </a>
+                      </div>
                       <div class="cursor-pointer" (click)="removeUser(i, j, k)">
                         <fa-icon class="fa-lg text-gray-400 mr-2" [icon]="faXmark"></fa-icon>
                       </div>

@@ -333,7 +333,7 @@ export class InfoComponent implements OnInit {
         return this.faCircleQuestion;
       case 'accepted':
         return this.faCircleCheck;
-      case 'declined':
+      case 'denied':
         return this.faCircleXmark;
       default:
         return this.faCircleQuestion;
@@ -345,8 +345,8 @@ export class InfoComponent implements OnInit {
         return 'text-secondary-500';
       case 'accepted':
         return 'text-primary-600';
-      case 'declined':
-        return 'text-gray-400';
+      case 'denied':
+        return 'text-danger';
       default:
         return 'text-secondary-500';
     }
