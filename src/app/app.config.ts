@@ -18,5 +18,5 @@ export const appConfig: ApplicationConfig = {
 };
 export const API_URL = new InjectionToken<string>('API_URL', {
   providedIn: 'root',
-  factory: () => 'http://localhost:8000/api/'
+  factory: () => 'https://core.pepijncolenbrander.com/api/'
 });
