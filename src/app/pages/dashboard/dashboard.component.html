@@ -2,12 +2,12 @@
   <div class="">
     <h1 class="text-3xl font-bold">Dashboard</h1>
     <div class="">
-      <div class="grid grid-cols-3 space-x-5">
-        <div class="bg-white p-5 flex flex-col justify-between">
+      <div class="grid grid-cols-2">
+        <div class="mr-5 bg-white p-5 flex flex-col justify-between">
           <div>
             <div class="text-xl font-bold">Aankomende Diensten</div>
-            <div class="space-y-5 mt-5">
-              <div class="flex justify-between items-center" *ngFor="let service of services">
+            <div class="mt-5">
+              <div class="mb-5 flex justify-between items-center" *ngFor="let service of services">
                 <div>
                   <div class="font-bold text-md">{{ service.title }}</div>
                   <div class="text-sm text-gray-600">{{ service.date }} | {{ service.start_time }} - {{ service.end_time }}</div>
@@ -20,7 +20,7 @@
               </div>
             </div>
           </div>
-          <div>
+          <div class="mt-5">
             <button type="button" (click)="newService()" class="my-auto cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">
               <fa-icon class="fa-lg text-gray-400 mr-2" [icon]="faPlus"></fa-icon>Nieuwe Dienst
             </button>
@@ -28,125 +28,41 @@
         </div>
         <div class="bg-white p-5">
           <div class="text-xl font-bold">Mijn Verzoeken</div>
-          <div class="mt-5 space-y-5">
-
-            <div class="flex justify-between items-center">
+          <div class="mt-5">
+            <div class="flex justify-between items-center mb-5" *ngFor="let request of userRequests">
               <div>
-                <div class="font-bold text-md">[Functie] <span class="font-normal">| [Team]</span></div>
-                <div class="text-sm text-gray-600">Zondagochtend | 2/3/2025 | 7:30 - 14:00</div>
+                <div class="font-bold text-md">{{ request.position.name }} <span class="font-normal">| {{ request.team.name }}</span></div>
+                <div class="text-sm text-gray-600">{{ request.service.title }} | {{ formatDate(request.service.date) }} | {{ formatTime(request.service.start_time) }} - {{ formatTime(request.service.end_time) }}</div>
               </div>
-              <div class="space-x-2">
-                <a href="">
-                  <fa-icon class="fa-xl text-primary-600" [icon]="faCircleCheck"></fa-icon>
-                </a>
-                <a href="">
-                  <fa-icon class="fa-xl text-secondary-500" [icon]="faCircleQuestion"></fa-icon>
-                </a>
-                <a href="">
-                  <fa-icon class="fa-xl text-danger" [icon]="faCircleXmark"></fa-icon>
-                </a>
-              </div>
-            </div>
-
-
-
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-bold text-md">Elektrische Gitaar <span class="font-normal">| Worship Team</span></div>
-                <div class="text-sm text-gray-600">Doopdienst | 9/3/2025 | 7:30 - 14:00</div>
-              </div>
-              <div class="space-x-2">
-                <a href="">
-                  <fa-icon class="fa-xl text-primary-600" [icon]="faCircleCheck"></fa-icon>
-                </a>
-                <a href="" class="hidden">
-                  <fa-icon class="fa-xl text-secondary-500" [icon]="faCircleQuestion"></fa-icon>
-                </a>
-                <a href="">
-                  <fa-icon class="fa-xl text-gray-400" [icon]="faCircleXmark"></fa-icon>
-                </a>
-              </div>
-            </div>
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-bold text-md">Geluid <span class="font-normal">| R'Sound</span></div>
-                <div class="text-sm text-gray-600">Zondagochtend | 16/3/2025 | 7:30 - 14:00</div>
-              </div>
-              <div class="space-x-2">
-                <a href="">
-                  <fa-icon class="fa-xl text-gray-400" [icon]="faCircleCheck"></fa-icon>
-                </a>
-                <a href="" class="hidden">
-                  <fa-icon class="fa-xl text-secondary-500" [icon]="faCircleQuestion"></fa-icon>
-                </a>
-                <a href="">
-                  <fa-icon class="fa-xl text-danger" [icon]="faCircleXmark"></fa-icon>
-                </a>
-              </div>
-            </div>
-
-
-
-
-          </div>
-        </div>
-        <div class="bg-white p-5">
-          <div class="text-xl font-bold">Mijn Teams</div>
-          <div class="mt-5 space-y-5">
-            <div class="mb-2">Worship Team</div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <div class="avatar mr-4">JH</div>
-                <div class="text-sm/6">
-                  <p class="font-semibold text-gray-900">
-                    <a href="#">
-                      <span class="absolute"></span>
-                      Jan Hendrik
-                    </a>
-                  </p>
-                  <p class="text-gray-600">Team Leader</p>
+              <div class="">
+                <div *ngIf="request.status === 'accepted'" class="flex">
+                  <div (click)="updateStatus('accepted', request)" class="cursor-pointer mr-2">
+                    <fa-icon class="fa-xl text-primary-600" [icon]="faCircleCheck"></fa-icon>
+                  </div>
+                  <div (click)="updateStatus('denied', request)" class="cursor-pointer">
+                    <fa-icon class="fa-xl text-gray-400" [icon]="faCircleXmark"></fa-icon>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <!--            Dummy data -->
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <div class="avatar mr-4">WT</div>
-                <div class="text-sm/6">
-                  <p class="font-semibold text-gray-900">
-                    <a href="#">
-                      <span class="absolute"></span>
-                      Willem de Tiende
-                    </a>
-                  </p>
-                  <p class="text-gray-600">Pianist</p>
+                <div *ngIf="request.status === 'waiting'" class="flex">
+                  <div (click)="updateStatus('accepted', request)" class="cursor-pointer mr-2">
+                    <fa-icon class="fa-xl text-gray-400" [icon]="faCircleCheck"></fa-icon>
+                  </div>
+                  <div (click)="updateStatus('waiting', request)" class="cursor-pointer mr-2">
+                    <fa-icon class="fa-xl text-secondary-500" [icon]="faCircleQuestion"></fa-icon>
+                  </div>
+                  <div (click)="updateStatus('denied', request)" class="cursor-pointer">
+                    <fa-icon class="fa-xl text-gray-400" [icon]="faCircleXmark"></fa-icon>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <div class="avatar mr-4">NZ</div>
-                <div class="text-sm/6">
-                  <p class="font-semibold text-gray-900">
-                    <a href="#">
-                      <span class="absolute"></span>
-                      Noah Zark
-                    </a>
-                  </p>
-                  <p class="text-gray-600">Team Lid</p>
-                </div>
-              </div>
-            </div>
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <div class="avatar mr-4">BL</div>
-                <div class="text-sm/6">
-                  <p class="font-semibold text-gray-900">
-                    <span class="absolute"></span>
-                    Beth Lehem
-                  </p>
-                  <p class="text-gray-600">Drums</p>
+
+                <div *ngIf="request.status === 'denied'" class="flex">
+                  <div (click)="updateStatus('accepted', request)" class="cursor-pointer mr-2">
+                    <fa-icon class="fa-xl text-gray-400" [icon]="faCircleCheck"></fa-icon>
+                  </div>
+                  <div (click)="updateStatus('denied', request)" class="cursor-pointer">
+                    <fa-icon class="fa-xl text-danger" [icon]="faCircleXmark"></fa-icon>
+                  </div>
                 </div>
               </div>
             </div>

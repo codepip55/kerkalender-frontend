@@ -122,4 +122,22 @@ export class ApiService {
       catchError(err => this.handleError(err, {user: null}, 'gebruiker ophalen'))
     );
   }
+
+  /**
+   * Get user requests
+   */
+  getUserRequests(userId: number) {
+    return this.http.get(this.apiUrl + `requests/${userId}`).pipe(
+      catchError(err => this.handleError(err, [], 'verzoeken ophalen'))
+    );
+  }
+
+  /**
+   * Update request status
+   */
+  updateRequestStatus(request: any, status: string, user_id: number) {
+    return this.http.post(this.apiUrl + `requests`, { v_request: request, status: status, user_id }).pipe(
+      catchError(err => this.handleError(err, {request: null}, 'verzoekstatus bijwerken'))
+    );
+  }
 }
