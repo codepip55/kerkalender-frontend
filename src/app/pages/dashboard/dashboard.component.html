@@ -32,14 +32,14 @@
             <div class="flex justify-between items-center mb-5" *ngFor="let request of userRequests">
               <div>
                 <div class="font-bold text-md">{{ request.position.name }} <span class="font-normal">| {{ request.team.name }}</span></div>
-                <div class="text-sm text-gray-600">{{ request.service.title }} | {{ formatDate(request.service.date) }} | {{ formatTime(request.service.startTime) }} - {{ formatTime(request.service.endTime) }}</div>
+                <div class="text-sm text-gray-600">{{ request.service.title }} | {{ formatDate(request.service.date) }} | {{ request.service.startTime }} - {{ request.service.endTime }}</div>
               </div>
               <div class="">
                 <div *ngIf="request.status === 'accepted'" class="flex">
                   <div (click)="updateStatus('accepted', request)" class="cursor-pointer mr-2">
                     <fa-icon class="fa-xl text-primary-600" [icon]="faCircleCheck"></fa-icon>
                   </div>
-                  <div (click)="updateStatus('denied', request)" class="cursor-pointer">
+                  <div (click)="updateStatus('declined', request)" class="cursor-pointer">
                     <fa-icon class="fa-xl text-gray-400" [icon]="faCircleXmark"></fa-icon>
                   </div>
                 </div>
@@ -51,16 +51,16 @@
                   <div (click)="updateStatus('waiting', request)" class="cursor-pointer mr-2">
                     <fa-icon class="fa-xl text-secondary-500" [icon]="faCircleQuestion"></fa-icon>
                   </div>
-                  <div (click)="updateStatus('denied', request)" class="cursor-pointer">
+                  <div (click)="updateStatus('declined', request)" class="cursor-pointer">
                     <fa-icon class="fa-xl text-gray-400" [icon]="faCircleXmark"></fa-icon>
                   </div>
                 </div>
 
-                <div *ngIf="request.status === 'denied'" class="flex">
+                <div *ngIf="request.status === 'declined'" class="flex">
                   <div (click)="updateStatus('accepted', request)" class="cursor-pointer mr-2">
                     <fa-icon class="fa-xl text-gray-400" [icon]="faCircleCheck"></fa-icon>
                   </div>
-                  <div (click)="updateStatus('denied', request)" class="cursor-pointer">
+                  <div (click)="updateStatus('declined', request)" class="cursor-pointer">
                     <fa-icon class="fa-xl text-danger" [icon]="faCircleXmark"></fa-icon>
                   </div>
                 </div>

@@ -103,13 +103,13 @@
                     </button>
                   </div>
 
-                  <div class="flex justify-between items-center" *ngFor="let user of position.members; let k = index">
+                  <div class="flex justify-between items-center mt-3" *ngFor="let user of position.members; let k = index">
                     <div class="flex items-center">
-                      <div class="avatar mr-4">{{ getInitials(user['user_id']) }}</div>
+                      <div class="avatar mr-4">{{ getInitials(user['user']['nameFull']) }}</div>
                       <div class="text-sm/6">
                         <p class="font-semibold text-gray-900">
                           <span class="absolute"></span>
-                          {{ getName(user['user_id']) }}
+                          {{ user['user']['nameFull'] }}
                         </p>
                         <p class="text-gray-600">Team Member</p>
                       </div>

@@ -61,8 +61,7 @@ export class DashboardComponent implements OnInit {
     // @ts-ignore
     const userRequests = await lastValueFrom(userRequests$);
     // @ts-ignore
-    this.userRequests = userRequests.data;
-    console.log(userRequests)
+    this.userRequests = userRequests;
   }
 
   newService() {

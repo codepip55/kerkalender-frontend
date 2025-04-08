@@ -6,7 +6,7 @@ export class Service {
   endTime: string;
   location: string;
   notes: string;
-  service_manager: number;
+  service_manager: Record<string, string>;
   teams: Team[];
 }
 export class Team {

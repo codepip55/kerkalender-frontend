@@ -55,6 +55,7 @@ export class ApiService {
    * Update service by id
    */
   updateService(id: string, dto: CreateServiceDto) {
+    console.log('updateService', id, dto);
     return this.http.put(this.apiUrl + 'services/' + id, dto).pipe(
       catchError(err => this.handleError(err, {service: null}, 'dienst bijwerken'))
     );
@@ -135,8 +136,8 @@ export class ApiService {
   /**
    * Update request status
    */
-  updateRequestStatus(request: any, status: string, user_id: number) {
-    return this.http.post(this.apiUrl + `services/requests/user`, { request: request, status: status, user_id }).pipe(
+  updateRequestStatus(request: any, status: string) {
+    return this.http.put(this.apiUrl + `services/requests/user`, { ...request, status }).pipe(
       catchError(err => this.handleError(err, {request: null}, 'verzoekstatus bijwerken'))
     );
   }

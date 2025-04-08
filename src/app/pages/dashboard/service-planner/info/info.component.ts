@@ -65,15 +65,13 @@ export class InfoComponent implements OnInit {
       });
     } else {
       const service = await this.getService(id!);
-      console.log('service', service);
-      console.log('getting service', service);
       this.serviceForm.patchValue({
         title: service.title,
         date: service.date.split('T')[0],
         startTime: service.startTime,
         endTime: service.endTime,
         location: service.location,
-        manager: service.service_manager
+        manager: service.service_manager['_id']
       });
       service.teams.forEach((team: any) => {
         const teamGroup = new FormGroup({
@@ -83,7 +81,7 @@ export class InfoComponent implements OnInit {
         team.positions.forEach((position: any) => {
           (teamGroup.get('positions') as FormArray).push(new FormGroup({
             name: new FormControl(position.name, Validators.required),
-            members: position.members ? new FormArray(position.members.map((member: any) => new FormControl(member))) : new FormArray([])
+            members: position.users ? new FormArray(position.users.map((member: any) => new FormControl(member))) : new FormArray([])
           }));
         });
         (this.serviceForm.get('teams') as FormArray).push(teamGroup);
@@ -93,7 +91,6 @@ export class InfoComponent implements OnInit {
     // Get all users
     this.apiService.getUsers().subscribe({
       next: (users: any) => {
-        console.log(users);
         users.forEach((user: any) => {
           this.users.push([user._id, user.nameFull]);
         });
@@ -126,7 +123,6 @@ export class InfoComponent implements OnInit {
   private async getService(id: string): Promise<Service> {
     const res = this.apiService.getService(id);
     const service = await lastValueFrom(res);
-    console.log(service);
     // @ts-ignore
     return service;
   }
@@ -175,8 +171,10 @@ export class InfoComponent implements OnInit {
     if (!user) return;
 
     const newUser = {
-      user_id: user[0],
-      name: user[1],
+      user: {
+        user_id: user[0],
+        nameFull: user[1],
+      },
       status: 'waiting' // Default status when added
     };
 
@@ -209,10 +207,10 @@ export class InfoComponent implements OnInit {
               positions: team.positions.map((position: any) => {
                 return {
                   name: position.name,
-                  members: position.members.map((user: any) => {
+                  users: position.members.map((user: any) => {
                     return {
-                      user_id: user.user_id,
-                      status: user.status
+                      user: user.user.user_id,
+                      status: user.user.status
                     };
                   })
                 }
@@ -220,7 +218,6 @@ export class InfoComponent implements OnInit {
             }
           }),
         }).subscribe({ next: (data) => {
-          console.log('Service Aangemaakt', data);
           this.alertService.add({ type: 'success', message: 'Service is aangemaakt.' });
             // @ts-ignore
             if (data.id === undefined) {
@@ -249,9 +246,10 @@ export class InfoComponent implements OnInit {
               positions: team.positions.map((position: any) => {
                 return {
                   name: position.name,
-                  members: position.members.map((user: any) => {
+                  users: position.members.map((user: any) => {
+                    console.log('user', user)
                     return {
-                      user_id: user.user_id,
+                      user: user.user.user_id ? user.user.user_id : user.user._id,
                       status: user.status
                     };
                   })
@@ -260,7 +258,6 @@ export class InfoComponent implements OnInit {
             }
           })
         }).subscribe({ next: (data) => {
-            console.log('Service Geupdatet', data);
             this.alertService.add({ type: 'success', message: 'Service is geupdatet.' });
             // @ts-ignore
             if (data.id === undefined) {
@@ -299,7 +296,6 @@ export class InfoComponent implements OnInit {
     if (this.confirmDelete) {
       this.apiService.deleteService(this.id).subscribe({
         next: (data) => {
-          console.log(data);
           this.alertService.add({ type: 'success', message: 'Service is verwijderd.' });
           this.router.navigate(['/dashboard']);
         },
@@ -314,12 +310,8 @@ export class InfoComponent implements OnInit {
     }
   }
 
-  getInitials(user_id: any) {
-    const user = this.users.find((u: any) => u[0] == user_id);
-    if (user) {
-      return user[1].split(' ').map((name: string) => name.charAt(0)).join('');
-    }
-    return '';
+  getInitials(userName: any) {
+    return userName.split(' ').map((name: string) => name.charAt(0)).join('');
   }
   getName(user_id: any) {
     const user = this.users.find((u: any) => u[0] == user_id);
