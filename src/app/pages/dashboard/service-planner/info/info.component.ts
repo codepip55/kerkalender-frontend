@@ -65,14 +65,15 @@ export class InfoComponent implements OnInit {
       });
     } else {
       const service = await this.getService(id!);
+      console.log('service', service);
       console.log('getting service', service);
       this.serviceForm.patchValue({
         title: service.title,
-        date: service.date,
-        startTime: this.formatTime(service.start_time),
-        endTime: this.formatTime(service.end_time),
+        date: service.date.split('T')[0],
+        startTime: service.startTime,
+        endTime: service.endTime,
         location: service.location,
-        manager: service.service_manager_id
+        manager: service.service_manager
       });
       service.teams.forEach((team: any) => {
         const teamGroup = new FormGroup({
@@ -92,8 +93,9 @@ export class InfoComponent implements OnInit {
     // Get all users
     this.apiService.getUsers().subscribe({
       next: (users: any) => {
+        console.log(users);
         users.forEach((user: any) => {
-          this.users.push([user.id, user.name]);
+          this.users.push([user._id, user.nameFull]);
         });
       },
       error: (error) => {
@@ -122,7 +124,7 @@ export class InfoComponent implements OnInit {
     }
   }
   private async getService(id: string): Promise<Service> {
-    const res = this.apiService.getService(parseInt(id));
+    const res = this.apiService.getService(id);
     const service = await lastValueFrom(res);
     console.log(service);
     // @ts-ignore
@@ -196,11 +198,11 @@ export class InfoComponent implements OnInit {
         this.apiService.createService({
           title: this.serviceForm.value.title,
           date: this.serviceForm.value.date.toString(),
-          start_time: this.serviceForm.value.startTime,
-          end_time: this.serviceForm.value.endTime,
+          startTime: this.serviceForm.value.startTime,
+          endTime: this.serviceForm.value.endTime,
           location: this.serviceForm.value.location,
           notes: 'test',
-          service_manager_id: this.serviceForm.value.manager,
+          service_manager: this.serviceForm.value.manager,
           teams: this.serviceForm.value.teams.map((team: any) => {
             return {
               name: team.team,
@@ -233,14 +235,14 @@ export class InfoComponent implements OnInit {
             console.error(error);
           }});
       } else {
-        this.apiService.updateService(parseInt(this.id), {
+        this.apiService.updateService(this.id, {
           title: this.serviceForm.value.title,
           date: this.serviceForm.value.date.toString(),
-          start_time: this.serviceForm.value.startTime,
-          end_time: this.serviceForm.value.endTime,
+          startTime: this.serviceForm.value.startTime,
+          endTime: this.serviceForm.value.endTime,
           location: this.serviceForm.value.location,
           notes: 'test',
-          service_manager_id: this.serviceForm.value.manager,
+          service_manager: this.serviceForm.value.manager,
           teams: this.serviceForm.value.teams.map((team: any) => {
             return {
               name: team.team,
@@ -287,8 +289,7 @@ export class InfoComponent implements OnInit {
     return date.toLocaleTimeString("nl-NL", {hour: "2-digit", minute: "2-digit"});
   }
   formatDate(date: string) {
-    const isoDate = new Date(date).toISOString();
-    return format(new Date(isoDate), 'dd/MM/yyyy');
+    return format(new Date(date), 'dd/MM/yyyy');
   }
   deleteService() {
     if (this.id === 'new') {
@@ -296,7 +297,7 @@ export class InfoComponent implements OnInit {
       this.alertService.add({ type: 'warning', message: 'Service is niet aangemaakt.' });
     }
     if (this.confirmDelete) {
-      this.apiService.deleteService(parseInt(this.id)).subscribe({
+      this.apiService.deleteService(this.id).subscribe({
         next: (data) => {
           console.log(data);
           this.alertService.add({ type: 'success', message: 'Service is verwijderd.' });

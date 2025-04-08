@@ -10,10 +10,10 @@
               <div class="mb-5 flex justify-between items-center" *ngFor="let service of services">
                 <div>
                   <div class="font-bold text-md">{{ service.title }}</div>
-                  <div class="text-sm text-gray-600">{{ service.date }} | {{ service.start_time }} - {{ service.end_time }}</div>
+                  <div class="text-sm text-gray-600">{{ service.date }} | {{ service.startTime }} - {{ service.endTime }}</div>
                 </div>
                 <div class="h-full">
-                  <a href="/dashboard/services/{{ service.id }}" class="">
+                  <a href="/dashboard/services/{{ service._id }}" class="">
                     <fa-icon class="fa-xl" [icon]="faCircleRight"></fa-icon>
                   </a>
                 </div>
@@ -32,7 +32,7 @@
             <div class="flex justify-between items-center mb-5" *ngFor="let request of userRequests">
               <div>
                 <div class="font-bold text-md">{{ request.position.name }} <span class="font-normal">| {{ request.team.name }}</span></div>
-                <div class="text-sm text-gray-600">{{ request.service.title }} | {{ formatDate(request.service.date) }} | {{ formatTime(request.service.start_time) }} - {{ formatTime(request.service.end_time) }}</div>
+                <div class="text-sm text-gray-600">{{ request.service.title }} | {{ formatDate(request.service.date) }} | {{ formatTime(request.service.startTime) }} - {{ formatTime(request.service.endTime) }}</div>
               </div>
               <div class="">
                 <div *ngIf="request.status === 'accepted'" class="flex">

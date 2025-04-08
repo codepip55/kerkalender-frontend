@@ -17,7 +17,7 @@ export class ApiService {
   ) { }
   private handleError<T>(err: any, res: T, action: string): Observable<T> {
     console.error(err);
-    this.alertService.add({ type: 'warning', message: err.error ? err.error.message : `Het is niet gelukt om '${action}' uit te voeren.` });
+    this.alertService.add({ type: 'warning', message: err.error.message.message ? err.error.message.message : `Het is niet gelukt om '${action}' uit te voeren.` });
     return of(res);
   }
 
@@ -45,7 +45,7 @@ export class ApiService {
   /**
    * Get service by id
    */
-  getService(id: number) {
+  getService(id: string) {
     return this.http.get(this.apiUrl + 'services/' + id).pipe(
       catchError(err => this.handleError(err, {service: null}, 'dienst ophalen'))
     );
@@ -54,7 +54,7 @@ export class ApiService {
   /**
    * Update service by id
    */
-  updateService(id: number, dto: CreateServiceDto) {
+  updateService(id: string, dto: CreateServiceDto) {
     return this.http.put(this.apiUrl + 'services/' + id, dto).pipe(
       catchError(err => this.handleError(err, {service: null}, 'dienst bijwerken'))
     );
@@ -63,7 +63,7 @@ export class ApiService {
   /**
    * Delete service by id
    */
-  deleteService(id: number) {
+  deleteService(id: string) {
     return this.http.delete(this.apiUrl + 'services/' + id).pipe(
       catchError(err => this.handleError(err, {service: null}, 'dienst verwijderen'))
     );
@@ -72,7 +72,7 @@ export class ApiService {
   /**
    * Get setlist by id
    */
-  getSetlist(id: number) {
+  getSetlist(id: string) {
     return this.http.get(this.apiUrl + 'setlists/' + id).pipe(
       catchError(err => this.handleError(err, {setlist: null}, 'setlist ophalen'))
     );
@@ -126,8 +126,8 @@ export class ApiService {
   /**
    * Get user requests
    */
-  getUserRequests(userId: number) {
-    return this.http.get(this.apiUrl + `requests/${userId}`).pipe(
+  getUserRequests() {
+    return this.http.get(this.apiUrl + `services/requests/user`).pipe(
       catchError(err => this.handleError(err, [], 'verzoeken ophalen'))
     );
   }
@@ -136,7 +136,7 @@ export class ApiService {
    * Update request status
    */
   updateRequestStatus(request: any, status: string, user_id: number) {
-    return this.http.post(this.apiUrl + `requests`, { v_request: request, status: status, user_id }).pipe(
+    return this.http.post(this.apiUrl + `services/requests/user`, { request: request, status: status, user_id }).pipe(
       catchError(err => this.handleError(err, {request: null}, 'verzoekstatus bijwerken'))
     );
   }

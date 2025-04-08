@@ -44,30 +44,33 @@ export class DashboardComponent implements OnInit {
   async ngOnInit() {
     const services$ = this.apiService.getServices();
     // @ts-ignore
-    this.services = await firstValueFrom(services$);
+    const response = await firstValueFrom(services$);
+    // @ts-ignore
+    this.services = response.services;
 
     // Format services
-    this.services = this.services.map((service: Service) => {
+    this.services = this.services.map((service) => {
       service.date = this.formatDate(service.date);
-      service.start_time = this.formatTime(service.start_time);
-      service.end_time = this.formatTime(service.end_time);
       return service;
     });
+    console.log(this.services);
 
     // Get user requests
-    const userRequests$ = this.apiService.getUserRequests(parseInt(this.userService.currentUser?.id || '0', 10));
+    // @ts-ignore
+    const userRequests$ = this.apiService.getUserRequests(this.userService.currentUser?.cid);
     // @ts-ignore
     const userRequests = await lastValueFrom(userRequests$);
     // @ts-ignore
     this.userRequests = userRequests.data;
-    console.log(this.userRequests);
+    console.log(userRequests)
   }
 
   newService() {
     this.router.navigate(['/dashboard/services/new']);
   }
   updateStatus(status: string, request: any) {
-    const response = this.apiService.updateRequestStatus(request, status, parseInt(this.userService.currentUser?.id || '0', 10));
+    // @ts-ignore
+    const response = this.apiService.updateRequestStatus(request, status, this.userService.currentUser?.cid);
     response.subscribe(() => {
       request.status = status;
       this.alertService.add({type: 'success', message: `Status van uw verzoek is bijgewerkt naar ${status}`});

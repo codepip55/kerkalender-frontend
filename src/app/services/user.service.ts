@@ -89,7 +89,7 @@ export class UserService implements OnDestroy {
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires
         clearTimeout(this.refreshTimeout);
-        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expires_in - (60 * 1000));
+        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - (60 * 1000));
 
         if (nonce !== '') {
           const state = window.sessionStorage.getItem(nonce);
@@ -122,7 +122,7 @@ export class UserService implements OnDestroy {
         this.tokenSubject.next(res.token);
         // Attempt to refresh 1 min before token expires
         clearTimeout(this.refreshTimeout);
-        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expires_in - (60 * 1000));
+        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - (60 * 1000));
         this.loadingSubject.next(false);
       }, error: (_err) => {
         console.error(_err);
