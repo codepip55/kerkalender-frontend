@@ -10,7 +10,7 @@ export class SpinnerComponent {
   @Input() size: 'sm' | 'md' | 'lg' | 'xl' | string = 'lg';
   @Input() color: '' | string = '#e7ebe5';
   @Input() fill: '' | string = '#38bdf8';
-  get dimesnsion() {
+  get dimension() {
     return this.size === 'sm'
       ? '1em'
       : this.size === 'md'
