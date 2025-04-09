@@ -1,7 +1,6 @@
 export class User {
   id: string;
-  name: string;
+  cid: number;
+  nameFull: string;
   email: string;
-  teams: string[];
-  services_managed: string[];
 }
