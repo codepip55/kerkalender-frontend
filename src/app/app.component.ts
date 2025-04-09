@@ -4,12 +4,11 @@ import { AlertComponent } from './components/alert/alert.component';
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { NavComponent } from './components/nav/nav.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { AsyncPipe, CommonModule, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { UserService } from './services/user.service';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
-    selector: 'app-root',
+  selector: 'app-root',
   imports: [
     RouterOutlet,
     AlertComponent,
@@ -18,15 +17,12 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     FooterComponent,
     AsyncPipe,
   ],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'Kerkalender';
-  constructor(
-    public userService: UserService
-  ) {
-  }
+  constructor(public userService: UserService) {}
 
   ngOnInit() {
     // Run authentication

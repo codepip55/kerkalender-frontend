@@ -1,12 +1,12 @@
 export class Service {
-  id: number
+  _id: number;
   title: string;
   date: string;
-  start_time: string;
-  end_time: string;
+  startTime: string;
+  endTime: string;
   location: string;
   notes: string;
-  service_manager_id: number;
+  service_manager: Record<string, string>;
   teams: Team[];
 }
 export class Team {

@@ -1,22 +1,21 @@
 export class CreateServiceDto {
   title: string;
   date: string;
-  start_time: string;
-  end_time: string;
+  startTime: string;
+  endTime: string;
   location: string;
   notes: string;
-  service_manager_id: number;
+  service_manager: string;
   teams: TeamsDto[];
 }
 export class UpdateServiceDto {
   title: string;
   date: string;
-  start_time: string;
-  end_time: string;
+  startTime: string;
+  endTime: string;
   location: string;
   notes: string;
-  service_manager_id: number;
-  setlist_id: number;
+  service_manager: string;
   teams: TeamsDto[];
 }
 export class TeamsDto {
