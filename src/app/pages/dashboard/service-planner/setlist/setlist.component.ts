@@ -8,7 +8,6 @@ import { NgFor } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../../services/api.service';
 import { lastValueFrom } from 'rxjs';
-import { SongDto } from '../../../../models/dtos/setlist.dto';
 
 @Component({
   selector: 'app-setlist',
@@ -26,8 +25,9 @@ export class SetlistComponent implements OnInit, OnDestroy {
   }
 
   setlistForm!: FormGroup;
-  service_id: number;
-  setlist_id: number;
+  service_id: string;
+  setlist_id: string;
+  setlist: any;
 
   protected readonly faTrash = faTrash;
   protected readonly faFloppyDisk = faFloppyDisk;
@@ -46,26 +46,45 @@ export class SetlistComponent implements OnInit, OnDestroy {
   private async init() {
     // Get service id from route
     const service_id = this.route.parent?.snapshot.paramMap.get('id');
-    this.service_id = parseInt(service_id!);
+    this.service_id = service_id!;
 
     // Get setlist by service_id
     let setlist: any = this.apiService.getSetlistByServiceId(this.service_id);
     setlist = await lastValueFrom(setlist);
-    this.setlist_id = setlist[0].id;
-    console.log(setlist);
+    // If 404, create setlist
+    if (setlist.setlist === null) {
+      this.alertService.add({ type: 'warning', message: 'Geen setlist gevonden, maak een nieuwe aan.' });
+      // Create setlist
+      this.apiService.createSetlist({
+        service: this.service_id,
+        songs: []
+      }).subscribe({ next: (res) => {
+          this.alertService.add({ type: 'success', message: 'Setlist aangemaakt.' });
+          // @ts-ignore
+          this.setlist_id = res._id;
+          this.setlist = res;
+        }, error: (err) => {
+          console.error(err);
+          this.alertService.add({ type: 'warning', message: 'Het is niet gelukt om de setlist aan te maken.' });
+        }
+      })
+    } else {
+      this.setlist_id = setlist._id;
+      this.setlist = setlist;
+    }
 
     // Init form
-    if (!setlist[0].songs) {
+    if (!setlist.songs) {
       return;
     }
-    setlist[0].songs.forEach((song: any) => {
+    setlist.songs.forEach((song: any) => {
       const songGroup: FormGroup = new FormGroup({
-        title: new FormControl(song.song.title, Validators.required),
-        artist: new FormControl(song.song.artist),
-        spotifyLink: new FormControl(song.song.spotify_link),
+        title: new FormControl(song.title, Validators.required),
+        artist: new FormControl(song.artist),
+        spotifyLink: new FormControl(song.spotifyLink),
         key: new FormControl(song.key, Validators.required),
-        vocalNotes: new FormControl(song.vocal_notes),
-        bandNotes: new FormControl(song.band_notes)
+        vocalNotes: new FormControl(song.vocalNotes),
+        bandNotes: new FormControl(song.bandNotes)
       });
       this.songs.push(songGroup);
     })
@@ -100,24 +119,23 @@ export class SetlistComponent implements OnInit, OnDestroy {
   }
   onSubmit() {
     if (this.setlistForm.valid) {
-      console.log(this.setlistForm.value);
       if (this.setlist_id === undefined) {
         this.alertService.add({ type: 'warning', message: 'Kon setlist id niet vinden' });
       }
       this.apiService.updateSetlist(this.setlist_id, {
-        songs: this.setlistForm.value.songs.map((song: any): SongDto => {
+        service: this.service_id,
+        songs: this.setlistForm.value.songs.map((song: any) => {
           return {
             title: song.title,
             artist: song.artist,
             spotify_link: song.spotifyLink,
             key: song.key,
-            vocal_notes: song.vocalNotes,
-            band_notes: song.bandNotes
+            vocalNotes: song.vocalNotes,
+            bandNotes: song.bandNotes
           }
         })
       }).subscribe({ next: (res) => {
         this.alertService.add({ type: 'success', message: 'Setlist bijgewerkt.' });
-        console.log(res);
         }, error: (err) => {
           console.error(err);
           this.alertService.add({type: 'warning', message: 'Het is niet gelukt om de setlist bij te werken.'});

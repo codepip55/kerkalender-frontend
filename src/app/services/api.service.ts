@@ -55,7 +55,6 @@ export class ApiService {
    * Update service by id
    */
   updateService(id: string, dto: CreateServiceDto) {
-    console.log('updateService', id, dto);
     return this.http.put(this.apiUrl + 'services/' + id, dto).pipe(
       catchError(err => this.handleError(err, {service: null}, 'dienst bijwerken'))
     );
@@ -82,16 +81,31 @@ export class ApiService {
   /**
    * Get setlist by service_id
    */
-  getSetlistByServiceId(service_id: number) {
-    return this.http.get(this.apiUrl + 'setlists/service/' + service_id).pipe(
-      catchError(err => this.handleError(err, {setlist: null}, 'setlist ophalen'))
+  getSetlistByServiceId(service_id: string) {
+    return this.http.get(this.apiUrl + 'setlists?service_id=' + service_id).pipe(
+      catchError(err => {
+        // if 404, ignore
+        if (err.status === 404) {
+          return of({setlist: null});
+        }
+        return this.handleError(err, {setlist: null}, 'setlist ophalen');
+      })
     );
   }
 
   /**
+   * Create setlist
+   */
+  createSetlist(dto: CreateSetlistDto) {
+    return this.http.post(this.apiUrl + 'setlists', dto).pipe(
+      catchError(err => this.handleError(err, {setlist: null}, 'setlist aanmaken'))
+    );
+  };
+
+  /**
    * Update setlist by setlist_id
    */
-  updateSetlist(id: number, dto: CreateSetlistDto) {
+  updateSetlist(id: string, dto: CreateSetlistDto) {
     return this.http.put(this.apiUrl + 'setlists/' + id, dto).pipe(
       catchError(err => this.handleError(err, {setlist: null}, 'setlist bijwerken'))
     );

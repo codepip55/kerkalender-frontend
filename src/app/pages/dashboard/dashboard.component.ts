@@ -53,7 +53,6 @@ export class DashboardComponent implements OnInit {
       service.date = this.formatDate(service.date);
       return service;
     });
-    console.log(this.services);
 
     // Get user requests
     // @ts-ignore

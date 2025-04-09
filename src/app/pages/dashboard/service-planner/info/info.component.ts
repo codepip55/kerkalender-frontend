@@ -209,8 +209,8 @@ export class InfoComponent implements OnInit {
                   name: position.name,
                   users: position.members.map((user: any) => {
                     return {
-                      user: user.user.user_id,
-                      status: user.user.status
+                      user: user.user.user_id ? user.user.user_id : user.user._id,
+                      status: user.status
                     };
                   })
                 }
@@ -220,13 +220,13 @@ export class InfoComponent implements OnInit {
         }).subscribe({ next: (data) => {
           this.alertService.add({ type: 'success', message: 'Service is aangemaakt.' });
             // @ts-ignore
-            if (data.id === undefined) {
+            if (data._id === undefined) {
               return;
             }
             // @ts-ignore
-            this.router.navigate(['/dashboard/services/' + data.id]);
+            this.router.navigate(['/dashboard/services/' + data._id]);
             // @ts-ignore
-            this.id = data.id;
+            this.id = data._id;
           }, error: (error) => {
             this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
             console.error(error);
@@ -247,7 +247,6 @@ export class InfoComponent implements OnInit {
                 return {
                   name: position.name,
                   users: position.members.map((user: any) => {
-                    console.log('user', user)
                     return {
                       user: user.user.user_id ? user.user.user_id : user.user._id,
                       status: user.status
@@ -264,9 +263,9 @@ export class InfoComponent implements OnInit {
               return;
             }
             // @ts-ignore
-            this.router.navigate(['/dashboard/services/' + data.id]);
+            this.router.navigate(['/dashboard/services/' + data._id]);
             // @ts-ignore
-            this.id = data.id;
+            this.id = data._id;
           }, error: (error) => {
             this.alertService.add({ type: 'danger', message: 'Er is iets fout gegaan.' });
             console.error(error);
