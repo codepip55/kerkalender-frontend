@@ -34,7 +34,7 @@ export default defineConfig([globalIgnores(["**/.eslintrc.js"]), {
 
         parserOptions: {
             project: "tsconfig.json",
-            tsconfigRootDir: "/Users/pepijncolenbrander/Documents/Coding/kerkalender/kerkalender-frontend",
+            tsconfigRootDir: process.cwd(),
         },
     },
 
