@@ -2,33 +2,37 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Alert, AlertService } from '../../services/alert.service';
 import { Subscription } from 'rxjs';
-import { faExclamationTriangle, faInfo, faCheckCircle, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import {
+  faExclamationTriangle,
+  faInfo,
+  faCheckCircle,
+  faCircleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
 import { NgForOf, TitleCasePipe } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-    selector: 'app-alert',
-    imports: [
-        TitleCasePipe,
-        FaIconComponent,
-        NgForOf
-    ],
-    templateUrl: './alert.component.html',
-    styleUrl: './alert.component.scss',
-    animations: [
-      trigger('toast', [
-        transition(':enter', [
+  selector: 'app-alert',
+  imports: [TitleCasePipe, FaIconComponent, NgForOf],
+  templateUrl: './alert.component.html',
+  styleUrl: './alert.component.scss',
+  animations: [
+    trigger('toast', [
+      transition(':enter', [
+        style({
+          opacity: 0,
+          transform: 'translateX(100%)',
+        }),
+        animate(
+          '500ms ease',
           style({
-            opacity: 0,
-            transform: 'translateX(100%)'
-          }),
-          animate('500ms ease', style({
             opacity: 1,
-            transform: 'translateX(0)'
-          })),
-        ]),
+            transform: 'translateX(0)',
+          }),
+        ),
       ]),
-    ]
+    ]),
+  ],
 })
 export class AlertComponent implements OnInit, OnDestroy {
   faExclamationTriangle = faExclamationTriangle;
@@ -39,7 +43,7 @@ export class AlertComponent implements OnInit, OnDestroy {
   alerts: Alert[] = [];
   alertSubscription: Subscription;
 
-  constructor(private alertService: AlertService) { }
+  constructor(private alertService: AlertService) {}
 
   icon(type: string): any {
     switch (type) {
@@ -66,13 +70,15 @@ export class AlertComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit() {
-    this.alertSubscription = this.alertService.alert$.subscribe({ next: (alert: Alert) => {
-      this.alerts.push(alert);
-      setTimeout(() => this.remove(alert), 5000);
-    }});
+    this.alertSubscription = this.alertService.alert$.subscribe({
+      next: (alert: Alert) => {
+        this.alerts.push(alert);
+        setTimeout(() => this.remove(alert), 5000);
+      },
+    });
   }
   remove(alert: Alert): void {
-    this.alerts = this.alerts.filter((a) => a !== alert);
+    this.alerts = this.alerts.filter(a => a !== alert);
   }
   ngOnDestroy() {
     this.alertSubscription.unsubscribe();

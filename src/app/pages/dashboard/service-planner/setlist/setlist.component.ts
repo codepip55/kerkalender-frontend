@@ -1,8 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { AlertService } from '../../../../services/alert.service';
 import { NgFor } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -11,18 +17,16 @@ import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-setlist',
-  imports: [
-    FaIconComponent,
-    ReactiveFormsModule,
-    NgFor
-  ],
+  imports: [FaIconComponent, ReactiveFormsModule, NgFor],
   templateUrl: './setlist.component.html',
-  styleUrl: './setlist.component.scss'
+  styleUrl: './setlist.component.scss',
 })
 export class SetlistComponent implements OnInit, OnDestroy {
-
-  constructor(private alertService: AlertService, private route: ActivatedRoute, private apiService: ApiService) {
-  }
+  constructor(
+    private alertService: AlertService,
+    private route: ActivatedRoute,
+    private apiService: ApiService,
+  ) {}
 
   setlistForm!: FormGroup;
   service_id: string;
@@ -34,8 +38,8 @@ export class SetlistComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setlistForm = new FormGroup({
-      songs: new FormArray([])
-    })
+      songs: new FormArray([]),
+    });
 
     this.init();
   }
@@ -53,21 +57,34 @@ export class SetlistComponent implements OnInit, OnDestroy {
     setlist = await lastValueFrom(setlist);
     // If 404, create setlist
     if (setlist.setlist === null) {
-      this.alertService.add({ type: 'warning', message: 'Geen setlist gevonden, maak een nieuwe aan.' });
+      this.alertService.add({
+        type: 'warning',
+        message: 'Geen setlist gevonden, maak een nieuwe aan.',
+      });
       // Create setlist
-      this.apiService.createSetlist({
-        service: this.service_id,
-        songs: []
-      }).subscribe({ next: (res) => {
-          this.alertService.add({ type: 'success', message: 'Setlist aangemaakt.' });
-          // @ts-ignore
-          this.setlist_id = res._id;
-          this.setlist = res;
-        }, error: (err) => {
-          console.error(err);
-          this.alertService.add({ type: 'warning', message: 'Het is niet gelukt om de setlist aan te maken.' });
-        }
-      })
+      this.apiService
+        .createSetlist({
+          service: this.service_id,
+          songs: [],
+        })
+        .subscribe({
+          next: res => {
+            this.alertService.add({
+              type: 'success',
+              message: 'Setlist aangemaakt.',
+            });
+            // @ts-expect-error - res._id is not defined
+            this.setlist_id = res._id;
+            this.setlist = res;
+          },
+          error: err => {
+            console.error(err);
+            this.alertService.add({
+              type: 'warning',
+              message: 'Het is niet gelukt om de setlist aan te maken.',
+            });
+          },
+        });
     } else {
       this.setlist_id = setlist._id;
       this.setlist = setlist;
@@ -84,10 +101,10 @@ export class SetlistComponent implements OnInit, OnDestroy {
         spotifyLink: new FormControl(song.spotifyLink),
         key: new FormControl(song.key, Validators.required),
         vocalNotes: new FormControl(song.vocalNotes),
-        bandNotes: new FormControl(song.bandNotes)
+        bandNotes: new FormControl(song.bandNotes),
       });
       this.songs.push(songGroup);
-    })
+    });
   }
   get songs(): FormArray {
     return this.setlistForm.get('songs') as FormArray;
@@ -99,7 +116,10 @@ export class SetlistComponent implements OnInit, OnDestroy {
     // Check if song already exists
     for (let i = 0; i < this.songs.length; i++) {
       if (this.songs.at(i).get('song')?.value === songName) {
-        this.alertService.add({ type: 'warning', message: 'Dit lied is al toegevoegd.' });
+        this.alertService.add({
+          type: 'warning',
+          message: 'Dit lied is al toegevoegd.',
+        });
         return;
       }
     }
@@ -110,7 +130,7 @@ export class SetlistComponent implements OnInit, OnDestroy {
       spotifyLink: new FormControl(''),
       key: new FormControl('C', Validators.required),
       vocalNotes: new FormControl(''),
-      bandNotes: new FormControl('')
+      bandNotes: new FormControl(''),
     });
     this.songs.push(songGroup);
   }
@@ -120,33 +140,46 @@ export class SetlistComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.setlistForm.valid) {
       if (this.setlist_id === undefined) {
-        this.alertService.add({ type: 'warning', message: 'Kon setlist id niet vinden' });
+        this.alertService.add({
+          type: 'warning',
+          message: 'Kon setlist id niet vinden',
+        });
       }
-      this.apiService.updateSetlist(this.setlist_id, {
-        service: this.service_id,
-        songs: this.setlistForm.value.songs.map((song: any) => {
-          return {
-            title: song.title,
-            artist: song.artist,
-            spotify_link: song.spotifyLink,
-            key: song.key,
-            vocalNotes: song.vocalNotes,
-            bandNotes: song.bandNotes
-          }
+      this.apiService
+        .updateSetlist(this.setlist_id, {
+          service: this.service_id,
+          songs: this.setlistForm.value.songs.map((song: any) => {
+            return {
+              title: song.title,
+              artist: song.artist,
+              spotify_link: song.spotifyLink,
+              key: song.key,
+              vocalNotes: song.vocalNotes,
+              bandNotes: song.bandNotes,
+            };
+          }),
         })
-      }).subscribe({ next: (res) => {
-        this.alertService.add({ type: 'success', message: 'Setlist bijgewerkt.' });
-        }, error: (err) => {
-          console.error(err);
-          this.alertService.add({type: 'warning', message: 'Het is niet gelukt om de setlist bij te werken.'});
-        }
-      });
+        .subscribe({
+          next: () => {
+            this.alertService.add({
+              type: 'success',
+              message: 'Setlist bijgewerkt.',
+            });
+          },
+          error: err => {
+            console.error(err);
+            this.alertService.add({
+              type: 'warning',
+              message: 'Het is niet gelukt om de setlist bij te werken.',
+            });
+          },
+        });
     } else {
-      this.alertService.add({ type: 'warning', message: 'Formulier is niet geldig.' });
+      this.alertService.add({
+        type: 'warning',
+        message: 'Formulier is niet geldig.',
+      });
       console.error('Formulier is niet geldig.');
     }
   }
-
-  protected readonly faPencil = faPencil;
-  protected readonly FormGroup = FormGroup;
 }

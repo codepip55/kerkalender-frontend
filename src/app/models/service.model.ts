@@ -1,5 +1,5 @@
 export class Service {
-  _id: number
+  _id: number;
   title: string;
   date: string;
   startTime: string;

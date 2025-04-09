@@ -1,5 +1,14 @@
-import { inject, Inject, Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, catchError, filter, first, Observable, of, switchMap, tap } from 'rxjs';
+import { inject, Injectable, OnDestroy } from '@angular/core';
+import {
+  BehaviorSubject,
+  catchError,
+  filter,
+  first,
+  Observable,
+  of,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { User } from '../models/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -8,7 +17,7 @@ import { AlertService } from './alert.service';
 import { API_URL } from '../app.config';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService implements OnDestroy {
   private currentUserSubject: BehaviorSubject<User | null>;
@@ -47,7 +56,11 @@ export class UserService implements OnDestroy {
   public login(redirectTo: string = '/') {
     this.loadingSubject.next(true);
 
-    const nonce = 'kk_redirect_' + Math.random().toString(36).replace(/[^a-z]+/g, '');
+    const nonce =
+      'kk_redirect_' +
+      Math.random()
+        .toString(36)
+        .replace(/[^a-z]+/g, '');
     const state = { redirectTo };
 
     window.sessionStorage.setItem(nonce, JSON.stringify(state));
@@ -56,82 +69,111 @@ export class UserService implements OnDestroy {
   }
   public logout() {
     this.loadingSubject.next(true);
-    const sub = this.http.get<any>(this.apiUrl + 'auth/logout').pipe(
-      catchError(err => {
-        console.error(err);
-        this.alertService.add({ type: 'warning', message: 'Could not remove refresh token' });
-        return of();
-      }),
-      tap(_ => {
-        this.currentUserSubject.next(null);
-        this.tokenSubject.next('');
+    const sub = this.http
+      .get<any>(this.apiUrl + 'auth/logout')
+      .pipe(
+        catchError(err => {
+          console.error(err);
+          this.alertService.add({
+            type: 'warning',
+            message: 'Could not remove refresh token',
+          });
+          return of();
+        }),
+        tap(() => {
+          this.currentUserSubject.next(null);
+          this.tokenSubject.next('');
 
-        if (this.refreshTimeout) {
-          clearTimeout(this.refreshTimeout);
-        }
+          if (this.refreshTimeout) {
+            clearTimeout(this.refreshTimeout);
+          }
 
-        this.router.navigate(['/']);
-        this.loadingSubject.next(false);
-      })
-    ).subscribe();
+          this.router.navigate(['/']);
+          this.loadingSubject.next(false);
+        }),
+      )
+      .subscribe();
     this.subscriptions.push(sub);
   }
   public handleCallback() {
     let nonce: string;
     this.loadingSubject.next(true);
-    const sub = this.route.queryParamMap.pipe(
-      tap(qs => nonce = qs.get('state') || ''),
-      filter(qs => !!qs.get('code')),
-      first(),
-      switchMap(qs => this.http.get<ApiResponse>(`${this.apiUrl}auth/kerkalender?code=${qs.get('code')}&state=${nonce}`)),
-    ).subscribe({ next: (res) => {
-        this.currentUserSubject.next(res.user);
-        this.tokenSubject.next(res.token);
-        // Attempt to refresh 1 min before token expires
-        clearTimeout(this.refreshTimeout);
-        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - (60 * 1000));
+    const sub = this.route.queryParamMap
+      .pipe(
+        tap(qs => (nonce = qs.get('state') || '')),
+        filter(qs => !!qs.get('code')),
+        first(),
+        switchMap(qs =>
+          this.http.get<ApiResponse>(
+            `${this.apiUrl}auth/kerkalender?code=${qs.get('code')}&state=${nonce}`,
+          ),
+        ),
+      )
+      .subscribe({
+        next: res => {
+          this.currentUserSubject.next(res.user);
+          this.tokenSubject.next(res.token);
+          // Attempt to refresh 1 min before token expires
+          clearTimeout(this.refreshTimeout);
+          this.refreshTimeout = setTimeout(
+            () => this.silentAuth(),
+            res.expiresIn - 60 * 1000,
+          );
 
-        if (nonce !== '') {
-          const state = window.sessionStorage.getItem(nonce);
-          if (state) {
-            const stateObj = JSON.parse(state);
-            const redirectTo = this.router.parseUrl(stateObj.redirectTo);
-            this.router.navigateByUrl(redirectTo);
-            this.loadingSubject.next(false);
-            return;
+          if (nonce !== '') {
+            const state = window.sessionStorage.getItem(nonce);
+            if (state) {
+              const stateObj = JSON.parse(state);
+              const redirectTo = this.router.parseUrl(stateObj.redirectTo);
+              this.router.navigateByUrl(redirectTo);
+              this.loadingSubject.next(false);
+              return;
+            }
           }
-        }
 
-        this.loadingSubject.next(false);
-      }, error: (err) => {
-        console.error(err);
-        this.alertService.add({ type: 'danger', message: 'Could not log in' });
-        this.router.navigate(['/']);
-        this.loadingSubject.next(false);
-      }
-    });
+          this.loadingSubject.next(false);
+        },
+        error: err => {
+          console.error(err);
+          this.alertService.add({
+            type: 'danger',
+            message: 'Could not log in',
+          });
+          this.router.navigate(['/']);
+          this.loadingSubject.next(false);
+        },
+      });
     this.subscriptions.push(sub);
   }
   public silentAuth(initialLoad: boolean = false) {
     this.loadingSubject.next(true);
-    const sub = this.http.get<ApiResponse>(`${this.apiUrl}auth/silent`, { withCredentials: true }).pipe(
-      first()
-    ).subscribe({
-      next: (res) => {
-        this.currentUserSubject.next(res.user);
-        this.tokenSubject.next(res.token);
-        // Attempt to refresh 1 min before token expires
-        clearTimeout(this.refreshTimeout);
-        this.refreshTimeout = setTimeout(() => this.silentAuth(), res.expiresIn - (60 * 1000));
-        this.loadingSubject.next(false);
-      }, error: (_err) => {
-        console.error(_err);
-        if (!initialLoad) {
-          this.alertService.add({ type: 'warning', message: 'Could not refresh token. Please save your work and refresh the page' });
-        }
-        this.loadingSubject.next(false);
-      }
-    });
+    const sub = this.http
+      .get<ApiResponse>(`${this.apiUrl}auth/silent`, { withCredentials: true })
+      .pipe(first())
+      .subscribe({
+        next: res => {
+          this.currentUserSubject.next(res.user);
+          this.tokenSubject.next(res.token);
+          // Attempt to refresh 1 min before token expires
+          clearTimeout(this.refreshTimeout);
+          this.refreshTimeout = setTimeout(
+            () => this.silentAuth(),
+            res.expiresIn - 60 * 1000,
+          );
+          this.loadingSubject.next(false);
+        },
+        error: _err => {
+          console.error(_err);
+          if (!initialLoad) {
+            this.alertService.add({
+              type: 'warning',
+              message:
+                'Could not refresh token. Please save your work and refresh the page',
+            });
+          }
+          this.loadingSubject.next(false);
+        },
+      });
     this.subscriptions.push(sub);
   }
 
@@ -139,7 +181,13 @@ export class UserService implements OnDestroy {
     return firstName[0].toUpperCase() + lastName[0].toUpperCase();
   }
 
-  public get currentUser(): User | null { return this.currentUserSubject.value; }
-  public get token(): string { return this.tokenSubject.value; }
-  public get loggedIn(): boolean { return this.currentUser !== null; }
+  public get currentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+  public get token(): string {
+    return this.tokenSubject.value;
+  }
+  public get loggedIn(): boolean {
+    return this.currentUser !== null;
+  }
 }
